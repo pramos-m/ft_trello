@@ -1,0 +1,10 @@
+{
+	"bsonType": "object",
+	"required": ["date"],
+	"properties": {
+		"date": {
+			"bsonType": "date",
+			"description": "must be a date and is required"
+		}
+	}
+}

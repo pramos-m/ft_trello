@@ -4,8 +4,8 @@ import index from "./routes/index.js"
 const { PORT = 5000 } = process.env;
 const app = express();
 
-PORT = 3001;
 app.use(express.json());
+
 app.use("/", index);
 
 app.use((err, req, res, next) => {

@@ -11,13 +11,13 @@ export default defineConfig({
       '/api': {
         target: API_URI,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
     },
     watch: {
-      usePolling: true,
+      usePolling: true
     },
     strictPort: true,
-    port: parseInt(PORT, 10),
-  },
+    port: parseInt(PORT, 10)
+  }
 })

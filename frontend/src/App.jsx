@@ -1,19 +1,15 @@
-import { useState, useEffect } from 'react'
+import React, { useState } from 'react';
+import LoginButton from './LoginButton.jsx';
+import Dashboard from './Dashboard.jsx';
 
-function App() {
-	const	[message, setMessage] = useState("");
-
-	useEffect(() => {
-		fetch("/api/").then(data => data.json()).then(data => setMessage(data["message"]));
-	}, []);
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
-    <>
-			<h1>
-				{message}
-			</h1>
-    </>
-  )
-}
+    <div>
+      {isLoggedIn ? <Dashboard /> : <LoginButton />}
+    </div>
+  );
+};
 
-export default App
+export default App;

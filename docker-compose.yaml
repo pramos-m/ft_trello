@@ -17,7 +17,7 @@ services:
       - .env
     environment:
       PORT: ${BACKEND_PORT}
-      DB_URI: mongodb://${DB_USER}:${DB_PASS}@flowboard:27017
+      DB_URI: mongodb://${DB_USER}:${DB_PASS}@database:27017
     depends_on:
       - database
     networks:

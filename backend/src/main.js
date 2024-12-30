@@ -28,7 +28,7 @@ app.use((err, req, res, next) => {
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     res.status(err.status || 500);
-    res.send("Uh oh! An unexpected error occured.");
+    res.send(err.message);
 })
 
 app.listen(PORT, () => {

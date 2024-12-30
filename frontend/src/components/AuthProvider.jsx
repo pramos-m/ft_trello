@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import AuthContext from "../context/AuthContext.jsx";
@@ -7,16 +7,25 @@ function	AuthProvider({ children }) {
 	const	[isAuthenticated, setIsAuthenticated] = useState(null);
 	const	navigate = useNavigate();
 
+	useEffect(() => {
+		fetch("/api/current-user")
+			.then(data => setIsAuthenticated(true))
+			.catch(error => {
+				console.log(error);
+				setIsAuthenticated(false);
+			});
+	}, []);
+
 	const	login = () => {
-		//navigate("/api/login");
-		setIsAuthenticated(true);
-		navigate("/");
+		window.location = "/api/auth/google";
+		//setIsAuthenticated(true);
+		//navigate("/");
 		return ;
 	}
 
 	const	logout = () => {
-		//navigate("/api/logout");
-		setIsAuthenticated(false);
+		navigate("/api/logout");
+		//setIsAuthenticated(false);
 		return ;
 	}
 

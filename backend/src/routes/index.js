@@ -6,43 +6,43 @@ const router = express.Router();
 
 // Rutas de autenticación
 router.get('/auth/google',
-    passport.authenticate('google', {
-        scope: ['profile', 'email']
-    })
+		passport.authenticate('google', {
+				scope: ['profile', 'email']
+		})
 );
 
 router.get('/auth/google/callback',
-    passport.authenticate('google', { 
-        failureRedirect: '/login-failed' 
-    }),
-    (req, res) => {
-        // Autenticación exitosa
-        res.redirect('/dashboard'); // O donde quieras redirigir
-    }
+		passport.authenticate('google', { 
+				failureRedirect: '/login' 
+		}),
+		(req, res) => {
+				// Autenticación exitosa
+				res.redirect('/'); // O donde quieras redirigir
+		}
 );
 
 // Ruta para verificar usuario actual
-router.get('/api/current-user', (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({ error: 'No autenticado' });
-    }
-    res.json(req.user);
+router.get('/current-user', (req, res) => {
+		if (!req.user) {
+				return res.status(401).json({ error: 'No autenticado' });
+		}
+		res.json(req.user);
 });
 
 // Ruta para cerrar sesión
-router.get('/api/logout', (req, res) => {
-    req.logout(function(err) {
-        if (err) { return next(err); }
-        res.redirect('/');
-    });
+router.get('/logout', (req, res) => {
+		req.logout(function(err) {
+				if (err) { return next(err); }
+				res.redirect('/');
+		});
 });
 
 router.get('/dashboard', isAuthenticated, (req, res) => {
-    res.json({ user: req.user });
+		res.json({ user: req.user });
 });
 
 router.get('/', (req, res) => {
-    res.send({message : "Hello from Express!"});
+		res.send({message : "Hello from Express!"});
 })
 
 export default router;

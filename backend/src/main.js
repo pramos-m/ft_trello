@@ -1,11 +1,27 @@
 import express from "express";
 import index from "./routes/index.js"
+import session from "express-session";
+import passport from "./middleware/passport.js"; // Importaremos la configuración de passport
 
-const { PORT = 5000 } = process.env;
+const { PORT = 3001 } = process.env;
 const app = express();
 
-app.use(express.json());
+// Configuración de session antes de passport
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'Mi3str1ng_S3cr3t0_L4rg0_Y_C0mpl3j0_2024',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 horas
+    }
+}));
 
+// Inicializar passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(express.json());
 app.use("/", index);
 
 app.use((err, req, res, next) => {

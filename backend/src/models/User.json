@@ -1,0 +1,15 @@
+{
+  "bsonType": "object",
+  "required": ["_id"],
+  "properties": {
+    "_id": {
+      "bsonType": "objectId",
+      "description": "User Id based on Google's unique identifier (sub), required"
+    },
+    "email": {
+      "bsonType": "string",
+      "description": "Email of the user, unique"
+    }
+  },
+  "additionalProperties": false
+}

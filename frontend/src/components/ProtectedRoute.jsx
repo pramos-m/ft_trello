@@ -1,12 +1,19 @@
-import { Navigate } from "react-router";
+import { useNavigate } from "react-router";
 
-import useAuth from "../hooks/useAuth.jsx";
+import { getSession } from "../services/auth.js";
 
 function	ProtectedRoute({ children }) {
-	const	{ isAuthenticated } = useAuth();
+	const navigate = useNavigate();
 
-	if (!isAuthenticated)
-		return (<Navigate to="/login"/>);
+	getSession()
+		.then(user => {
+			if (!user)
+				navigate("/login");
+		})
+		.catch((error) => {
+			navigate("/login");
+		});
+
 	return (children);
 }
 

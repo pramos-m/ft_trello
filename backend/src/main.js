@@ -7,21 +7,19 @@ const { PORT = 3001 } = process.env;
 const app = express();
 
 // Configuración de session antes de passport
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'Mi3str1ng_S3cr3t0_L4rg0_Y_C0mpl3j0_2024',
     resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 horas
-    }
-}));
+    saveUninitialized: true
+	})
+);
 
 // Inicializar passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(express.json());
 app.use("/", index);
 
 app.use((err, req, res, next) => {

@@ -12,13 +12,10 @@ router.get('/auth/google',
 );
 
 router.get('/auth/google/callback',
-		passport.authenticate('google', { 
-				failureRedirect: '/login' 
-		}),
-		(req, res) => {
-				// Autenticación exitosa
-				res.redirect('/'); // O donde quieras redirigir
-		}
+		passport.authenticate('google', {
+			successReturnToOrRedirect: "/",
+			failureRedirect: '/login' 
+		})
 );
 
 // Ruta para verificar usuario actual

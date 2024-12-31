@@ -36,6 +36,7 @@ export default {
 						DEFAULT: "#757575",
 						selected: "#D9D9D9",
 						optionSelected: "#F2F4F7",
+						iron: "#DADCE0",
 					},
 				},
 				cards: {

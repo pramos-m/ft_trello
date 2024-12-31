@@ -1,19 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
+import { Routes, Route } from "react-router";
 
-function App() {
-	const	[message, setMessage] = useState("");
+import Home from "./pages/Home.jsx";
+import Login from "./pages/Login.jsx";
+import AuthProvider from "./components/AuthProvider.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
-	useEffect(() => {
-		fetch("/api/").then(data => data.json()).then(data => setMessage(data["message"]));
-	}, []);
-
+function	App() {
   return (
-    <>
-			<h1>
-				{message}
-			</h1>
-    </>
-  )
+		<AuthProvider>
+			<Routes>
+				<Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>} />
+				<Route path="/login" element={<Login/>} />
+			</Routes>
+		</AuthProvider>
+  );
 }
 
-export default App
+export default App;

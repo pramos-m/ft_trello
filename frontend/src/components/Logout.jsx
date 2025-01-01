@@ -11,7 +11,10 @@ function	Logout() {
 	}
 
 	return (
-		<button onClick={handleLogout}>Logout</button>
+		<button className="w-[5.25rem] h-[1.438rem] flex justify-center items-center gap-2 rounded-xl shadow-md drop-sahdow-md" onClick={handleLogout}>
+			<img src="/icons/leave.svg"/>
+			<span className="font-medium text-sm text-btn-grey">Logout</span>
+		</button>
 	);
 }
 

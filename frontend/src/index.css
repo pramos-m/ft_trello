@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap");
+@import url("https://db.onlinewebfonts.com/c/8865c2ea1c416f5c17881dbb8b60a51d?family=Leira+Lite");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

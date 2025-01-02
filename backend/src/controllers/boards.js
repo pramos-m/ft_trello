@@ -54,38 +54,50 @@ const controller = {
     };
   },*/
 
-    // Obtener detalles de un board por id
-    async getBoardById(id) {
-      const board = await collection.findOne({ _id: new ObjectId(id) });
+  async getBoardById(id) {
+    const board = await collection.findOne({ _id: new ObjectId(id) });
   
-      if (!board) {
-        throw new Error("Board not found");
-      }
+    if (!board) {
+      throw new Error("Board not found");
+    }
   
-      const lists = await listCollection
-        .find({ boardId: board._id })
-        .project({ name: 1, description: 1 })
-        .toArray();
+    const lists = await listCollection
+      .find({ boardId: board._id })
+      .project({ name: 1, description: 1 })
+      .toArray();
   
-      const listsWithTasks = await Promise.all(
-        lists.map(async (list) => {
-          const tasks = await taskCollection
-            .find({ listId: list._id })
-            .project({ name: 1, description: 1 })
-            .toArray();
-          return { ...list, tasks };
-        })
-      );
+    const listsWithTasks = await Promise.all(
+      lists.map(async (list, listIndex) => {
+        const tasks = await taskCollection
+          .find({ listId: list._id })
+          .project({ name: 1, description: 1 })
+          .toArray();
   
-      return {
-        _id: board._id,
-        name: board.name,
-        color: board.color,
-        favorite: board.favorite,
-        lists: listsWithTasks,
-      };
-    },  
+        // Añadir índice a las tareas
+        const tasksWithIndex = tasks.map((task, taskIndex) => ({
+          index: taskIndex,
+          ...task,
+        }));
   
+        // Retornar lista con índice e incluir tareas con índices
+        return {
+          index: listIndex,
+          ...list,
+          tasks: tasksWithIndex,
+        };
+      })
+    );
+  
+    return {
+      _id: board._id,
+      name: board.name,
+      color: board.color,
+      favorite: board.favorite,
+      lists: listsWithTasks,
+    };
+  },
+  
+
     // Obtener detalles de todos los boards del usuario con detalles.
     async getBoardsWithDetails(userId) {
       const boards = await collection

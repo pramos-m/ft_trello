@@ -20,12 +20,8 @@ function	Login() {
 				</button>
 			</div>
 			<div className="flex flex-col justify-around items-center gap-2 mb-8">
-				<h1 className="font-inter font-thin text-xl">
-					FlowBoard
-				</h1>
-				<h1 className="font-inter font-light text-[.625rem]">
-					COPYRIGHT 2024 PRAT EDUCACIÓ COMPANY
-				</h1>
+				<h1 className="font-inter font-thin text-xl">FlowBoard</h1>
+				<h1 className="font-inter font-light text-[.625rem]">COPYRIGHT 2024 PRAT EDUCACIÓ COMPANY</h1>
 			</div>
 		</div>
 	);

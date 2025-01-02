@@ -1,6 +1,6 @@
 //const plugin = require("tailwindcss/plugin");
 //const animations = require("@midudev/tailwind-animations");
-//import { fontFamily } from "tailwindcss/defaultTheme";
+// import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
@@ -10,6 +10,8 @@ export default {
         sans: ["Roboto", "sans-serif"],
 				inter: ["Inter", "sans-serif"],
 				leira: ["Leira Lite", "sans-serif"],
+				dangerless: ["Dangerless Liaisons", "sans-serif"],
+				pompiere: ["Pompiere", "sans-serif"],
       },
       colors: {
         transparent: "transparent",

@@ -10,7 +10,7 @@
       "bsonType": "string",
       "description": "Name of the board, required"
     },
-    "color": {
+    "color": { 
       "bsonType": "string",
       "description": "Color associated with the board, required"
     },

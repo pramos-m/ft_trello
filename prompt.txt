@@ -1,222 +1,660 @@
-ahora que ya conoces mi backend, que los archivos importantes son estos:
-main.js
-import express from "express";
-import index from "./routes/index.js"
-import session from "express-session";
-import passport from "./middleware/passport.js"; // Importaremos la configuración de passport
-
-const { PORT = 3001 } = process.env;
-const app = express();
-
-// Configuración de session antes de passport
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'Mi3str1ng_S3cr3t0_L4rg0_Y_C0mpl3j0_2024',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 horas
+teniendo mis modelos:
+board.json:
+{
+  "bsonType": "object",
+  "required": ["_id", "name", "color", "favorite", "date", "userId"],
+  "properties": {
+    "_id": {
+      "bsonType": "objectId",
+      "description": "Board Id, required"
+    },
+    "name": {
+      "bsonType": "string",
+      "description": "Name of the board, required"
+    },
+    "color": { 
+      "bsonType": "string",
+      "description": "Color associated with the board, required"
+    },
+    "favorite": {
+	    "bsonType": "bool",
+	    "description": "Flag to know if board is in the favorite list, required"
+	  },
+	  "date": {
+		  "bsonType": "date",
+		  "description": "Date of board creation, required"
+	  },
+    "userId": {
+      "bsonType": "objectId",
+      "description": "User ID of the board creator, required"
     }
-}));
+  },
+  "additionalProperties": false
+}
+lists.json:
+{
+  "bsonType": "object",
+  "required": ["_id", "name", "index", "boardId"],
+  "properties": {
+    "_id": {
+      "bsonType": "objectId",
+      "description": "List Id, required"
+    },
+    "name": {
+      "bsonType": "string",
+      "description": "Name of the list, required"
+    },
+    "description": {
+      "bsonType": "string",
+      "description": "Description of the list, optional"
+    },
+	  "index": {
+	    "bsonType": "int",
+	    "minimum": 0,
+	    "description": "Integer to represent the position on the board"
+    },
+    "boardId": {
+      "bsonType": "objectId",
+      "description": "Board ID to which the list belongs, required"
+    }
+  },
+  "additionalProperties": false
+}
 
-// Inicializar passport
-app.use(passport.initialize());
-app.use(passport.session());
+tasks.json:
+{
+  "bsonType": "object",
+  "required": ["_id", "name", "priority", "effort", "index", "listId"],
+  "properties": {
+    "_id": {
+      "bsonType": "objectId",
+      "description": "Task Id, required"
+    },
+    "name": {
+      "bsonType": "string",
+      "description": "Name of the task, required"
+    },
+    "description": {
+      "bsonType": "string",
+      "description": "Description of the task, optional"
+    },
+    "priority": {
+      "bsonType": "string",
+      "enum": ["low", "mid", "high"],
+      "description": "can be 'low', 'mid' or 'high' and is required"
+    },
+    "effort": {
+      "bsonType": "string",
+      "enum": ["low", "mid", "high"],
+      "description": "can be 'low', 'mid' or 'high' and is required"
+    },
+	  "index": {
+	    "bsonType": "int",
+	    "minimum": 0,
+	    "description": "Integer to represent the position on the board"
+    },
+    "listId": {
+      "bsonType": "objectId",
+      "description": "List ID to which the task belongs, required"
+    }
+  },
+  "additionalProperties": false
+}
 
-app.use(express.json());
-app.use("/", index);
 
-app.use((err, req, res, next) => {
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    res.status(err.status || 500);
-    res.send("Uh oh! An unexpected error occured.");
-})
+controladores:
+board.js:
+import db from "../db/connection.js";
+import { ObjectId } from "mongodb";
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-});
+const collection = db.collection("boards");
+const listCollection = db.collection("lists");
+const taskCollection = db.collection("tasks");
 
-index.js:
+const controller = {
+  // Obtener todos los boards del usuario con detalles completos
+  async getBoardsWithDetails(userId) {
+    const boards = await this.getByUser(userId);
+
+    const detailedBoards = await Promise.all(
+      boards.map(async (board) => {
+        const lists = await listCollection.find({ boardId: board._id }).toArray();
+        const listIds = lists.map((list) => list._id);
+        const tasks = await taskCollection.find({ listId: { $in: listIds } }).toArray();
+        const tasksCount = tasks.length;
+        const isFavorite = board.favorite;
+        const isRecent = await this.isRecent(board._id);
+
+        return {
+          ...board,
+          lists,
+          tasks,
+          tasksCount,
+          isFavorite,
+          isRecent,
+        };
+      })
+    );
+
+    return detailedBoards;
+  },
+
+  // Obtener todos los boards del usuario
+  async getByUser(userId) {
+    return collection.find({ userId: new ObjectId(userId) }).toArray();
+  },
+
+  // Obtener la cantidad de listas asignadas a un board
+  async getListCount(boardId) {
+    return listCollection.countDocuments({ boardId: new ObjectId(boardId) });
+  },
+
+  // Obtener la cantidad de tareas asignadas a un board
+  async getTaskCount(boardId) {
+    const lists = await listCollection.find({ boardId: new ObjectId(boardId) }).toArray();
+    const listIds = lists.map((list) => list._id);
+    return taskCollection.countDocuments({ listId: { $in: listIds } });
+  },
+
+  // Verificar si un board es favorito
+  async isFavorite(id) {
+    const board = await collection.findOne({ _id: new ObjectId(id) }, { projection: { favorite: 1 } });
+    if (!board) throw new Error("Board not found");
+    return board.favorite;
+  },
+
+  // Marcar un board como favorito
+  async addFavorite(id) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { favorite: true } }
+    );
+    if (result.modifiedCount === 0) throw new Error("Failed to add favorite");
+    return true;
+  },
+
+  // Quitar un board como favorito
+  async removeFavorite(id) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { favorite: false } }
+    );
+    if (result.modifiedCount === 0) throw new Error("Failed to remove favorite");
+    return true;
+  },
+
+  // Verificar si un board es reciente
+  async isRecent(id) {
+    const board = await collection.findOne({ _id: new ObjectId(id) }, { projection: { date: 1 } });
+    if (!board) throw new Error("Board not found");
+    const daysDifference = (new Date() - board.date) / (1000 * 60 * 60 * 24);
+    return daysDifference <= 15; // Considera reciente si fue creado en los últimos 15 días
+  },
+
+  // Crear un nuevo board
+  async createBoard(data) {
+    const newBoard = {
+      ...data,
+      favorite: data.favorite || false,
+      date: new Date(),
+    };
+    const result = await collection.insertOne(newBoard);
+    if (result.insertedCount === 0) throw new Error("Failed to create board");
+    return result.ops[0];
+  },
+
+  // Editar un board
+  async updateBoard(id, data) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: data }
+    );
+    if (result.matchedCount === 0) throw new Error("Board not found");
+    return result.modifiedCount > 0;
+  },
+};
+
+export default controller;
+list.js:
+import db from "../db/connection.js";
+import { ObjectId } from "mongodb";
+
+const collection = db.collection("lists");
+
+const controller = {
+  // Cambiar el nombre de una lista
+  async changeName(id, newName) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { name: newName } }
+    );
+    if (result.matchedCount === 0) throw new Error("List not found");
+    return result.modifiedCount > 0;
+  },
+
+  // Cambiar la descripción de una lista
+  async changeDescription(id, newDescription) {
+    if (newDescription.length > 383) throw new Error("Description too long");
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { description: newDescription } }
+    );
+    if (result.matchedCount === 0) throw new Error("List not found");
+    return result.modifiedCount > 0;
+  },
+
+  // Cambiar el índice de una lista y ajustar los índices afectados
+  async changeIndex(id, newIndex) {
+    const list = await collection.findOne({ _id: new ObjectId(id) });
+    if (!list) throw new Error("List not found");
+
+    const { index: currentIndex, boardId } = list;
+
+    if (currentIndex === newIndex) return true; // No se requiere ningún cambio
+
+    // Determinar el rango afectado
+    const updateQuery = currentIndex < newIndex
+      ? { boardId, index: { $gt: currentIndex, $lte: newIndex } }
+      : { boardId, index: { $gte: newIndex, $lt: currentIndex } };
+
+    const updateOperation = currentIndex < newIndex
+      ? { $inc: { index: -1 } }
+      : { $inc: { index: 1 } };
+
+    // Actualizar los índices afectados
+    await collection.updateMany(updateQuery, updateOperation);
+
+    // Establecer el nuevo índice para la lista
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { index: newIndex } }
+    );
+
+    return result.modifiedCount > 0;
+  },
+
+  // Obtener todas las listas de un tablero
+  async getListsByBoard(boardId) {
+    return await collection.find({ boardId: new ObjectId(boardId) }).sort({ index: 1 }).toArray();
+  },
+
+  // Eliminar una lista por su ID
+  async deleteList(id) {
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) throw new Error("List not found");
+    return true;
+  },
+
+  // Crear una nueva lista
+  async createList(data) {
+    const { boardId, name, description, index } = data;
+
+    // Ajustar índices si se proporciona uno
+    if (index !== undefined) {
+      await collection.updateMany(
+        { boardId: new ObjectId(boardId), index: { $gte: index } },
+        { $inc: { index: 1 } }
+      );
+    }
+
+    const result = await collection.insertOne({
+      boardId: new ObjectId(boardId),
+      name,
+      description: description || "",
+      index: index ?? (await collection.countDocuments({ boardId: new ObjectId(boardId) })),
+    });
+
+    return result.insertedId;
+  },
+};
+
+export default controller;
+task.js:
+import db from "../db/connection.js";
+import { ObjectId } from "mongodb";
+
+const collection = db.collection("tasks");
+
+const controller = {
+  // Cambiar el nombre de una tarea
+  async changeName(id, newName) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { name: newName } }
+    );
+    if (result.matchedCount === 0) throw new Error("Task not found");
+    return result.modifiedCount > 0;
+  },
+
+  // Cambiar la descripción de una tarea
+  async changeDescription(id, newDescription) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { description: newDescription } }
+    );
+    if (result.matchedCount === 0) throw new Error("Task not found");
+    return result.modifiedCount > 0;
+  },
+
+  // Cambiar la prioridad de una tarea
+  async changePriority(id, newPriority) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { priority: newPriority } }
+    );
+    if (result.matchedCount === 0) throw new Error("Task not found");
+    return result.modifiedCount > 0;
+  },
+
+  // Cambiar el esfuerzo de una tarea
+  async changeEffort(id, newEffort) {
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { effort: newEffort } }
+    );
+    if (result.matchedCount === 0) throw new Error("Task not found");
+    return result.modifiedCount > 0;
+  },
+
+  // Mover tarea dentro de la misma columna
+  async moveTaskWithinColumn(taskId, newIndex) {
+    const task = await collection.findOne({ _id: new ObjectId(taskId) });
+    if (!task) throw new Error("Task not found");
+
+    const { listId, index: currentIndex } = task;
+
+    if (currentIndex === newIndex) return true;
+
+    const query = currentIndex < newIndex
+      ? { listId, index: { $gt: currentIndex, $lte: newIndex } }
+      : { listId, index: { $gte: newIndex, $lt: currentIndex } };
+
+    const update = currentIndex < newIndex
+      ? { $inc: { index: -1 } }
+      : { $inc: { index: 1 } };
+
+    await collection.updateMany(query, update);
+
+    task.index = newIndex;
+    await collection.updateOne({ _id: task._id }, { $set: { index: newIndex } });
+
+    return task;
+  },
+
+  // Mover tarea a otra columna
+  async moveTaskToAnotherColumn(taskId, newListId, newIndex) {
+    const task = await collection.findOne({ _id: new ObjectId(taskId) });
+    if (!task) throw new Error("Task not found");
+
+    const { listId: currentListId, index: currentIndex } = task;
+
+    if (currentListId.toString() === newListId.toString()) {
+      return controller.moveTaskWithinColumn(taskId, newIndex);
+    }
+
+    await collection.updateMany(
+      { listId: currentListId, index: { $gt: currentIndex } },
+      { $inc: { index: -1 } }
+    );
+
+    await collection.updateMany(
+      { listId: newListId, index: { $gte: newIndex } },
+      { $inc: { index: 1 } }
+    );
+
+    task.listId = newListId;
+    task.index = newIndex;
+    await collection.updateOne({ _id: task._id }, { $set: { listId: newListId, index: newIndex } });
+
+    return task;
+  }
+};
+
+export default controller;
+routes:
+board.js:
 import express from "express";
-import passport from 'passport';
-import { isAuthenticated } from '../middleware/auth.js';
+import controller from "../controllers/boards.js";
 
 const router = express.Router();
 
-// Rutas de autenticación
-router.get('/auth/google',
-    passport.authenticate('google', {
-        scope: ['profile', 'email']
-    })
-);
-
-router.get('/auth/google/callback',
-    passport.authenticate('google', { 
-        failureRedirect: '/login-failed' 
-    }),
-    (req, res) => {
-        // Autenticación exitosa
-        res.redirect('/dashboard'); // O donde quieras redirigir
-    }
-);
-
-// Ruta para verificar usuario actual
-router.get('/api/current-user', (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({ error: 'No autenticado' });
-    }
-    res.json(req.user);
+// Ruta para obtener todos los boards de un usuario
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const boards = await controller.getByUser(userId);
+    res.status(200).json(boards);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-// Ruta para cerrar sesión
-router.get('/api/logout', (req, res) => {
-    req.logout(function(err) {
-        if (err) { return next(err); }
-        res.redirect('/');
-    });
+// Ruta para obtener los detalles de todos los boards de un usuario
+router.get("/user/:userId/details", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const boardsWithDetails = await controller.getBoardsWithDetails(userId);
+    res.status(200).json(boardsWithDetails);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-router.get('/dashboard', isAuthenticated, (req, res) => {
-    res.json({ user: req.user });
+// Ruta para marcar un board como favorito
+router.patch("/:id/favorite", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await controller.addFavorite(id);
+    res.status(200).json({ message: "Board marked as favorite" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-router.get('/', (req, res) => {
-    res.send({message : "Hello from Express!"});
-})
+// Ruta para quitar un board como favorito
+router.patch("/:id/unfavorite", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await controller.removeFavorite(id);
+    res.status(200).json({ message: "Board unmarked as favorite" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Ruta para crear un nuevo board
+router.post("/", async (req, res) => {
+  try {
+    const data = req.body;
+    const newBoard = await controller.createBoard(data);
+    res.status(201).json(newBoard);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Ruta para editar un board
+router.put("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    const success = await controller.updateBoard(id, data);
+    res.status(200).json({ success });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+export default router;
+list.js:
+import express from "express";
+import controller from "../controllers/lists.js";
+
+const router = express.Router();
+
+// Cambiar el nombre de una lista
+router.patch("/:id/name", async (req, res) => {
+  const { newName } = req.body;
+  if (!newName) return res.status(400).send("New name is required");
+  try {
+    const success = await controller.changeName(req.params.id, newName);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Cambiar la descripción de una lista
+router.patch("/:id/description", async (req, res) => {
+  const { newDescription } = req.body;
+  if (!newDescription) return res.status(400).send("New description is required");
+  try {
+    const success = await controller.changeDescription(req.params.id, newDescription);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Cambiar el índice de una lista y ajustar los índices afectados
+router.patch("/:id/index", async (req, res) => {
+  const { newIndex } = req.body;
+  if (newIndex === undefined || typeof newIndex !== "number")
+    return res.status(400).send("New index must be a number and is required");
+  try {
+    const success = await controller.changeIndex(req.params.id, newIndex);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Obtener todas las listas de un tablero
+router.get("/board/:boardId", async (req, res) => {
+  try {
+    const lists = await controller.getListsByBoard(req.params.boardId);
+    res.status(200).json(lists);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Eliminar una lista
+router.delete("/:id", async (req, res) => {
+  try {
+    const success = await controller.deleteList(req.params.id);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Crear una nueva lista
+router.post("/", async (req, res) => {
+  const { name, boardId, description, index } = req.body;
+  if (!name || !boardId) return res.status(400).send("Name and boardId are required");
+  try {
+    const listId = await controller.createList({ name, boardId, description, index });
+    res.status(201).send({ listId });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+export default router;
+task.js:
+import express from "express";
+import controller from "../controllers/tasks.js";
+
+const router = express.Router();
+
+// Cambiar el nombre de una tarea
+router.patch("/:id/name", async (req, res) => {
+  const { newName } = req.body;
+  if (!newName) return res.status(400).send("New name is required");
+  try {
+    const success = await controller.changeName(req.params.id, newName);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Cambiar la descripción de una tarea
+router.patch("/:id/description", async (req, res) => {
+  const { newDescription } = req.body;
+  if (!newDescription) return res.status(400).send("New description is required");
+  try {
+    const success = await controller.changeDescription(req.params.id, newDescription);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Cambiar la prioridad de una tarea
+router.patch("/:id/priority", async (req, res) => {
+  const { newPriority } = req.body;
+  const validPriorities = ["low", "mid", "high"];
+  if (!newPriority || !validPriorities.includes(newPriority))
+    return res.status(400).send("New priority must be 'low', 'mid', or 'high'");
+  try {
+    const success = await controller.changePriority(req.params.id, newPriority);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Cambiar el esfuerzo de una tarea
+router.patch("/:id/effort", async (req, res) => {
+  const { newEffort } = req.body;
+  const validEfforts = ["low", "mid", "high"];
+  if (!newEffort || !validEfforts.includes(newEffort))
+    return res.status(400).send("New effort must be 'low', 'mid', or 'high'");
+  try {
+    const success = await controller.changeEffort(req.params.id, newEffort);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Cambiar el índice de una tarea
+router.patch("/:id/index", async (req, res) => {
+  const { newIndex } = req.body;
+  if (newIndex === undefined || typeof newIndex !== "number")
+    return res.status(400).send("New index must be a number and is required");
+  try {
+    const success = await controller.changeIndex(req.params.id, newIndex);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// Ruta para mover tarea dentro de la misma columna
+router.patch("/:id/move-within-column", async (req, res) => {
+  const { newIndex } = req.body;
+  try {
+    const task = await controller.moveTaskWithinColumn(req.params.id, newIndex);
+    res.status(200).json(task);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Ruta para mover tarea a otra columna
+router.patch("/:id/move-to-column", async (req, res) => {
+  const { newListId, newIndex } = req.body;
+  try {
+    const task = await controller.moveTaskToAnotherColumn(req.params.id, newListId, newIndex);
+    res.status(200).json(task);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export default router;
 
-auth.js
-// Middleware para verificar si el usuario está autenticado
-export const isAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.status(401).json({ error: 'No autorizado - Inicia sesión primero' });
-};
-
-// Middleware para verificar si el usuario NO está autenticado (útil para rutas de login)
-export const isNotAuthenticated = (req, res, next) => {
-    if (!req.isAuthenticated()) {
-        return next();
-    }
-        res.redirect('/dashboard'); // Redirecciona si ya está autenticado
-    };
-
-
-passport.js
-import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import db from '../db/connection.js';
-
-// Serialización
-passport.serializeUser((user, done) => {
-    done(null, user._id);
-});
-
-// Deserialización
-passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await db.collection('users').findOne({ _id: id });
-        done(null, user);
-    } catch (err) {
-        done(err, null);
-    }
-});
-
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    proxy: true
-},
-async (accessToken, refreshToken, profile, done) => {
-    try {
-        const existingUser = await db.collection('users').findOne({ googleId: profile.id });
-        if (existingUser) {
-            return done(null, existingUser);
-        }
-        const newUser = {
-            googleId: profile.id,
-            email: profile.emails[0].value,
-            boards: [],
-            favorites: [],
-            createdAt: new Date(),
-        };
-        const result = await db.collection('users').insertOne(newUser);
-        newUser._id = result.insertedId;
-        done(null, newUser);
-    } catch (err) {
-        done(err, null);
-    }
-}
-));
-
-
-export default passport;
-
-
-entonces, lo que quiero es añadir el botónd e login con google en mi frontend, cómo puedo hacerlo? Los archivos principales son estos, las rutas funcionan bien:
-app.jsx:
-import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router";
-
-import Home from "./pages/Home.jsx";
-import Login from "./pages/Login.jsx";
-import AuthProvider from "./components/AuthProvider.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-
-function	App() {
-  return (
-		<AuthProvider>
-			<Routes>
-				<Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>} />
-				<Route path="/login" element={<Login/>} />
-			</Routes>
-		</AuthProvider>
-  );
-}
-
-export default App;
-
-home.jsx:
-import Logout from "../components/Logout.jsx";
-
-function	Home() {
-	return (
-		<>
-			<h1> Home </h1>
-			<Logout/>
-		</>
-	);
-}
-
-export default Home;
-
-
-login.jsx:
-//import { Link } from "react-router";
-
-import useAuth from "../hooks/useAuth.jsx";
-
-function	Login() {
-	const	{ login } = useAuth();
-
-	const	handleLogin = () => {
-		login();
-		return ;
-	}
-
-	return (
-		<>
-			<img className="w-24 h-24" src="/logo.svg"/>
-			<button onClick={handleLogin}>Sign in with Google</button>
-		</>
-	);
-}
-
-export default Login;
-
-
-Si necesitas documentacion de algún blog para ver como se aplica el login en google, dímelo.
+Hazme peticiones en postman para confirmar que el funcionamiento del backend es correcto, es importante que se testee su totalidad.

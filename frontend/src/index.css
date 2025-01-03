@@ -12,3 +12,12 @@
     font-weight: 400;
     src: local(''), url('https://fonts.cdnfonts.com/s/119354/DangerlessLiaisons-nAXnY.woff') format('woff');
 }
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  

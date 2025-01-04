@@ -2,7 +2,7 @@
 
 import useAuth from "../hooks/useAuth.jsx";
 
-function	Logout() {
+export function	Logout() {
 	const	{ logout } = useAuth();
 
 	const	handleLogout = () => {
@@ -17,5 +17,3 @@ function	Logout() {
 		</button>
 	);
 }
-
-export default Logout;

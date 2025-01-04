@@ -14,7 +14,7 @@ function	Home() {
 			id: i,
 			name: `Mallorca${i}`,
 			color: "#FF00FF",
-			cards: 30,
+			tasks: 30,
 			lists: 6,
 			favorite: i % 3,
 			recent: i % 2
@@ -34,10 +34,5 @@ function	Home() {
 		</div>
 	);
 }
-// <BoardsListLayout title=""/>
-// <BoardsListLayout title=""/>
-// <Carousel direction="x" innerContainer={BoardsListLayout} cards={boards.filter(({favorite}) => favorite)} CardComponent={BoardPreview}/>
-// <Carousel direction="x" innerContainer={BoardsListLayout} cards={boards.filter(({recent}) => recent)} CardComponent={BoardPreview}/>
-// <Carousel direction="y" innerContainer={BoardsListLayout} cards={boards} CardComponent={BoardPreview}/>
 
 export default Home;

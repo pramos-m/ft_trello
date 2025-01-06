@@ -1,7 +1,10 @@
+import { useBoards } from "../hooks/useBoards.js";
 import { Logout } from "../components/Logout.jsx";
 import { BoardsListLayout } from "../components/BoardsListLayout.jsx";
 
 function	Home() {
+	const	[boardss, refreshBoards, boardsError] = useBoards();
+	//const	[categories, categoriesError] = useCategories();
 	let	boards = [];
 	let	categories = [
 		{name: "Favorite", filter: ({favorite}) => favorite, create: false, direction: "x"},
@@ -13,7 +16,7 @@ function	Home() {
 		boards.push({
 			id: i,
 			name: `Mallorca${i}`,
-			color: "#FF00FF",
+			color: "#DFE9FE",
 			tasks: 30,
 			lists: 6,
 			favorite: i % 3,
@@ -28,11 +31,13 @@ function	Home() {
 			</div>
 			{
 				categories && categories.map(({name, filter, create, direction}) => 
-					<BoardsListLayout key={name} title={name} create={create} direction={direction} boards={boards.filter(filter)}/>
+					<BoardsListLayout
+						key={name} title={name} create={create}
+						direction={direction} boards={boards.filter(filter)}
+						refresh={refreshBoards} />
 				)
 			}
 		</div>
 	);
 }
-
 export default Home;

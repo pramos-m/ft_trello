@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-export function	NewBoard() {
+import { createBoard } from "../services/boards.js";
+
+export function	NewBoard({refresh}) {
 	const	[isPopup, setIsPopup] = useState(false);
 
 	const	handleSubmit = (e) => {
@@ -9,17 +11,15 @@ export function	NewBoard() {
 		const data = Object.fromEntries(new FormData(e.target));
 
 		console.log(data);
-		fetch("/api/board/new", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		})
-			.then(data => data.json())
-			.then(data => console.log(data))
-			.catch(err => console.log(err))
+		createBoard({data})
+			.then(() => {
+
+			})
+			.catch(err => {
+				console.log(err)
+			});
 		setIsPopup(false);
+		refresh();
 		return ;
 	}
 

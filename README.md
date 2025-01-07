@@ -1,8 +1,7 @@
-# Peer2Pong
+# ft_trello
 
 ## Description
-
-Peer2Pong is a web application designed to manage competitive ping pong activities.
+ft_trello is a web application designed to manage tasks.
 
 ## Technologies Used
 
@@ -23,8 +22,8 @@ Peer2Pong is a web application designed to manage competitive ping pong activiti
 1. **Clone the Repository**
 
    ```sh
-   git clone https://github.com/NullSquad/peer-2-pong.git
-   cd peer-2-pong
+   git clone https://github.com/pramos-m/ft_trello.git
+   cd ft_trello
    ```
 
 2. **Set Up Environment Variables**
@@ -41,4 +40,4 @@ Peer2Pong is a web application designed to manage competitive ping pong activiti
 
 ### Accessing the Application
 
-Open your web browser and navigate to `http://localhost:3000` to access the Peer2Pong application.
+Open your web browser and navigate to `http://localhost:3000` to access the ft_trello application.

@@ -3,13 +3,28 @@ import { motion } from 'framer-motion';
 import { useBoard } from '../context/BoardContext';
 import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Star } from 'lucide-react';
+import DropdownMenu from '../components/common/DropdDownMenu';
 
 export default function Board() {
   const { columns, deleteCard, deleteColumn } = useBoard();
   const [draggingCard, setDraggingCard] = useState(null);
   const [isDraggingColumn, setIsDraggingColumn] = useState(false);
   const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const menuItems = [
+    {
+      icon: <Star size={16} className={isFavorite ? "fill-current text-yellow-400" : ""} />,
+      label: "Favourite",
+      onClick: () => setIsFavorite(!isFavorite)
+    },
+    {
+      icon: <Trash2 size={16} />,
+      label: "Delete",
+      onClick: () => {/* Add delete functionality */}
+    }
+  ];
 
   const handleTrashDragOver = (e) => {
     e.preventDefault();
@@ -40,7 +55,10 @@ export default function Board() {
   return (
     <div className="min-h-screen bg-neutral-grey-50">
       <header className="border-b border-neutral-grey-200 bg-white px-6 py-4">
-        <h1 className="text-xl font-medium text-neutral-grey-800">Mallorca</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-medium text-neutral-grey-800">Mallorca</h1>
+          <DropdownMenu items={menuItems} />
+        </div>
       </header>
       <div className="p-6">
         <div className="flex items-start gap-4 overflow-x-auto pb-4">

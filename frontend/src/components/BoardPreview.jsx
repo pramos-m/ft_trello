@@ -1,7 +1,12 @@
-export function	BoardPreview({width, name, lists, tasks, color}) {
+export function	BoardPreview({id, width, name, lists, tasks, color}) {
+	const	handleBoard = () => {
+		window.location = `/board/${id}`;
+		return ;
+	}
 	return (
 		<div className="shrink-0 h-32 grid grid-rows-3 grid-cols-2 rounded-2xl"
-					style={{width, backgroundColor: color}}
+			style={{width, backgroundColor: color}}
+			onClick={handleBoard}
 		>
 			<div className="col-span-2 row-span-2 border-b-2 border-white flex justify-center items-center">
 				<h1 className="font-dangerless text-[2rem]">{name}</h1>

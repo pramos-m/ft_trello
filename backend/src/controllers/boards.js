@@ -19,7 +19,7 @@ const controller = {
         name: board.name,
         color: board.color,
         favorite: board.favorite,
-        recent: ((new Date() - board.date) / (1000 * 60 * 60 * 24)) <= 15,
+        recent: ((new Date() - board.lastView) / (1000 * 60 * 60 * 24)) <= 15,
 				lists: 6,
 				tasks: 30,
       }));
@@ -178,9 +178,9 @@ const controller = {
 
   // Verificar si un board es reciente
   async isRecent(id) {
-    const board = await collection.findOne({ _id: ObjectId.createFromHexString(id) }, { projection: { date: 1 } });
+    const board = await collection.findOne({ _id: new ObjectId(id) }, { projection: { lastView: 1 } });
     if (!board) throw new Error("Board not found");
-    const daysDifference = (new Date() - board.date) / (1000 * 60 * 60 * 24);
+    const daysDifference = (new Date() - board.lastView) / (1000 * 60 * 60 * 24);
     return daysDifference <= 15; // Considera reciente si fue creado en los últimos 15 días
   },
 

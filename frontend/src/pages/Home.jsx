@@ -5,9 +5,7 @@ import { BoardsListLayout } from "../components/BoardsListLayout.jsx";
 import { categories } from "../data/categories.js";
 
 function	Home() {
-	const	[boardss, refreshBoards, boardsError] = useBoards();
-
-	let		boards = [];
+	let	[boards, refreshBoards, boardsError] = useBoards();
 
 	for (let i = 0; i < 10; i++)
 		boards.push({

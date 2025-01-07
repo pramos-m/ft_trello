@@ -22,6 +22,10 @@
 		  "bsonType": "date",
 		  "description": "Date of board creation, required"
 	  },
+	  "lastView": {
+		  "bsonType": "date",
+		  "description": "Date of last time was view the board, optional"
+	  },
     "userId": {
       "bsonType": "objectId",
       "description": "User ID of the board creator, required"

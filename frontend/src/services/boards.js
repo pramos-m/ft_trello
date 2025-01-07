@@ -12,7 +12,7 @@ export function	getBoards() {
 
 export function	createBoard({data}) {
 	return (
-		fetch("/api/board/new", {
+		fetch("/api/boards/", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -21,7 +21,10 @@ export function	createBoard({data}) {
 		})
 			.then(res => {
 				if (!res.ok)
+				{
+					console.log(res);
 					throw new Error("Failed to fetch boards");
+				}
 				return (res.json());
 			})
 	);

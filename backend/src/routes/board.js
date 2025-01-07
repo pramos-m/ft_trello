@@ -3,10 +3,21 @@ import controller from "../controllers/boards.js";
 
 const router = express.Router();
 
+// Ruta para obtener todos los boards del usuario autenticado
+router.get("/me", async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const boards = await controller.getBoardsByUser(userId);
+    res.status(200).json(boards);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Ruta para obtener todos los boards de un usuario
 router.get("/user/:userId", async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.user._id;
     const boards = await controller.getBoardsByUser(userId);
     res.status(200).json(boards);
   } catch (error) {
@@ -17,7 +28,7 @@ router.get("/user/:userId", async (req, res) => {
 // Ruta para obtener los detalles de todos los boards de un usuario
 router.get("/user/:userId/details", async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.user._id;
     const boardsWithDetails = await controller.getBoardsWithDetails(userId);
     res.status(200).json(boardsWithDetails);
   } catch (error) {
@@ -74,7 +85,7 @@ router.patch("/:id/unfavorite", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const data = req.body;
-    const newBoard = await controller.createBoard(data);
+    const newBoard = await controller.createBoard({...data, userId: req.user._id});
     res.status(201).json(newBoard);
   } catch (error) {
     res.status(500).json({ message: error.message });

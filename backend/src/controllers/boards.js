@@ -15,10 +15,13 @@ const controller = {
         .toArray();
   
       return boards.map((board) => ({
+				id: board._id,
         name: board.name,
         color: board.color,
         favorite: board.favorite,
-        "is recent": ((new Date() - board.date) / (1000 * 60 * 60 * 24)) <= 15,
+        recent: ((new Date() - board.date) / (1000 * 60 * 60 * 24)) <= 15,
+				lists: 6,
+				tasks: 30,
       }));
     },
 
@@ -187,12 +190,12 @@ const controller = {
     }
   
     const newBoard = {
-      _id: new ObjectId(),
+      // _id: new ObjectId(),
       name: data.name,
-      color: data.color,
+      color: "#FF00FF",
       favorite: data.favorite || false,
-      date: new Date(data.date),
-      userId: ObjectId.createFromHexString(data.userId),
+      date: new Date(),
+      userId: new ObjectId(data.userId),
     };
   
     try {

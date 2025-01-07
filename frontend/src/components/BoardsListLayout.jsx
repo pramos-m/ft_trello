@@ -18,7 +18,12 @@ export function	BoardsListLayout({title, boards, create, direction, refresh}) {
 				<h1 className="font-semibold text-xl">{title}</h1>
 				{ create && <NewBoard refresh={refresh}/> }
 			</div>
-			<Carousel twClassName={twClassName} cards={newBoards} CardComponent={BoardPreview} direction={direction}/>
+			{
+				boards.length > 0 ?
+					<Carousel twClassName={twClassName} cards={newBoards} CardComponent={BoardPreview} direction={direction}/>
+				:
+					<h1>There aren't any board yet</h1>
+			}
 		</div>
 	);
 }

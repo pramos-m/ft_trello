@@ -1,8 +1,8 @@
 //import { Link } from "react-router";
 
-import useAuth from "../hooks/useAuth.js";
+import useAuth from "../hooks/useAuth.jsx";
 
-export function	Logout() {
+function	Logout() {
 	const	{ logout } = useAuth();
 
 	const	handleLogout = () => {
@@ -17,3 +17,5 @@ export function	Logout() {
 		</button>
 	);
 }
+
+export default Logout;

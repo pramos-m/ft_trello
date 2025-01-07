@@ -1,6 +1,6 @@
 //import { Link } from "react-router";
 
-import useAuth from "../hooks/useAuth.js";
+import useAuth from "../hooks/useAuth.jsx";
 
 function	Login() {
 	const	{ login } = useAuth();

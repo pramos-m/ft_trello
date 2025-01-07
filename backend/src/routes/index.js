@@ -42,9 +42,4 @@ router.get('/', (req, res) => {
 		res.send({message : "Hello from Express!"});
 })
 
-router.post("/board/new", (req, res) => {
-	console.log(req.body);
-	res.send({message: `new board created with ${req.body.name}`});
-});
-
 export default router;

@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;300&display=swap");
+@import url("https://db.onlinewebfonts.com/c/8865c2ea1c416f5c17881dbb8b60a51d?family=Leira+Lite");
+@import url('https://fonts.googleapis.com/css2?family=Pompiere&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Dangerless Liaisons';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''), url('https://fonts.cdnfonts.com/s/119354/DangerlessLiaisons-nAXnY.woff') format('woff');
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  
+  /* Estilo para cuando la card está siendo arrastrada */
+  .dragging-card {
+    opacity: 0.5;
+    transform: scale(1.05); /* Aumenta un poco al arrastrar */
+  }
+  
+  .cards-container > div {
+    transition: transform 0.2s ease, height 0.2s ease;
+  }
+  
+  .line-clamp-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: calc(1.5em * 4);
+  }  
+  .card-dragging {
+    transform: rotate(2deg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card {
+    max-width: 100%;
+    width: 100%;
+    min-height: 48px;
+  }
+  
+  .card p {
+    margin: 0;
+    padding: 0;
+  }

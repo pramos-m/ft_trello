@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 
-import AuthContext from "../context/AuthContext.js";
+import AuthContext from "../context/AuthContext.jsx";
 
 function	AuthProvider({ children }) {
 	const	[isAuthenticated, setIsAuthenticated] = useState(false);

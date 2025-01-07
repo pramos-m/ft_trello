@@ -6,7 +6,7 @@ import ListSchema from "../models/List.json" with { type: "json" };
 import TaskSchema from "../models/Task.json" with { type: "json" };
 import LabelSchema from "../models/Label.json" with { type: "json" };
 
-const URI = process.env.DB_URI || "";
+const URI = process.env.DB_URI || "mongodb://localhost:27017/flowboard";
 const client = new MongoClient(URI);
 
 let	db;

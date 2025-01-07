@@ -13,6 +13,8 @@ services:
   backend:
     restart: always
     build: backend
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     env_file:
       - .env
     environment:

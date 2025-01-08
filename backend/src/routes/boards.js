@@ -1,4 +1,5 @@
 import express from "express";
+
 import controller from "../controllers/boards.js";
 
 const router = express.Router();
@@ -6,19 +7,7 @@ const router = express.Router();
 // Ruta para obtener todos los boards del usuario autenticado
 router.get("/me", async (req, res) => {
   try {
-    const userId = req.user._id;
-    const boards = await controller.getBoardsByUser(userId);
-    res.status(200).json(boards);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Ruta para obtener todos los boards de un usuario
-router.get("/user/:userId", async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const boards = await controller.getBoardsByUser(userId);
+    const boards = await controller.getBoardsByUser(req.user._id);
     res.status(200).json(boards);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -26,30 +15,17 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 // Ruta para obtener los detalles de todos los boards de un usuario
-router.get("/user/:userId/details", async (req, res) => {
+router.get("/me/detailed", async (req, res) => {
   try {
-    const userId = req.user._id;
-    const boardsWithDetails = await controller.getBoardsWithDetails(userId);
+    const boardsWithDetails = await controller.getBoardsWithDetails(req.user._id);
     res.status(200).json(boardsWithDetails);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Ruta para obtener los detalles del board por nombre
-/*router.get('/board/:name', async (req, res) => {
-  try {
-    const { name } = req.params;
-    const boardDetails = await controller.getBoardByName(name);
-    res.status(200).json(boardDetails);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-});
-*/
-
 // Ruta para obtener los detalles del board por id
-router.get('/board/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const boardDetails = await controller.getBoardById(id);

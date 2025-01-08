@@ -1,7 +1,12 @@
 import express from "express";
-import index from "./routes/index.js"
 import session from "express-session";
 import passport from "./middleware/passport.js"; // Importaremos la configuración de passport
+
+import authRouter from "./auth.js";
+import usersRouter from "./users.js";
+import boardsRouter from "./boards.js";
+import tasksRouter from "./tasks.js";
+import listsRouter from "./lists.js";
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -20,7 +25,21 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/", index);
+// Rutas de autenticación
+router.use("/auth", authRouter);
+
+// Rutas de usuarios
+// TMP: Ruta para crear un nuevo usuario
+router.use("/users", usersRouter);
+
+// Rutas de boards
+router.use("/boards", boardsRouter);
+
+// Rutas de tasks
+router.use("/tasks", tasksRouter);
+
+// Rutas de lists
+router.use("/lists", listsRouter);
 
 app.use((err, req, res, next) => {
     res.locals.message = err.message;

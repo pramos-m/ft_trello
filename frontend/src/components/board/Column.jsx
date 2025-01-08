@@ -14,6 +14,7 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
   const [isDraggingToTrash, setIsDraggingToTrash] = useState(false);
   const [placeholderHeight, setPlaceholderHeight] = useState(0);
   const [placeholderIndex, setPlaceholderIndex] = useState(null);
+  const MAX_VISIBLE_DESCRIPTION_LENGTH = 100;
 
   const editRef = useRef(null);
   const columnRef = useRef(null);
@@ -72,6 +73,10 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
   
   const handleMouseLeave = () => {
     setIsHovering(false);
+  };
+  const getTruncatedDescription = (text) => {
+    if (!text || text.length <= MAX_VISIBLE_DESCRIPTION_LENGTH) return text;
+    return text.substring(0, MAX_VISIBLE_DESCRIPTION_LENGTH) + '...';
   };
   
   const calculateCardDropIndex = (e) => {
@@ -255,30 +260,30 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
           </div>
 
           {/* Description Section */}
-          {(isEditing || column.description) && (
-            <div className="mt-2">
-              {isEditing ? (
-                <div>
-                  <textarea
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    className="w-full rounded border border-neutral-300 px-2 py-1 text-sm resize-vertical bg-white focus:outline-none focus:border-blue-500"
-                    rows={2}
-                    placeholder="Add description..."
-                  />
-                  <div className="text-xs text-right text-neutral-500 mt-1">
-                    {description.length}/{MAX_DESCRIPTION_LENGTH}
-                  </div>
+        {(isEditing || column.description) && (
+          <div className="mt-2">
+            {isEditing ? (
+              <div>
+                <textarea
+                  value={description}
+                  onChange={handleDescriptionChange}
+                  className="w-full rounded border border-neutral-300 px-2 py-1 text-sm resize-vertical bg-white focus:outline-none focus:border-blue-500"
+                  rows={2}
+                  placeholder="Add description..."
+                />
+                <div className="text-xs text-right text-neutral-500 mt-1">
+                  {description.length}/{MAX_DESCRIPTION_LENGTH}
                 </div>
-              ) : (
-                column.description && (
-                  <p className="text-sm text-neutral-600 break-words">
-                    {column.description}
-                  </p>
-                )
-              )}
-            </div>
-          )}
+              </div>
+            ) : (
+              column.description && (
+                <p className="text-sm text-neutral-600 break-words">
+                  {getTruncatedDescription(column.description)}
+                </p>
+              )
+            )}
+          </div>
+        )}
         </div>
 
         {/* Cards Container */}

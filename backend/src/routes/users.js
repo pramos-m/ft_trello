@@ -1,8 +1,10 @@
+import express from "express";
 import { ObjectId } from "mongodb";
 
 import db from '../db/connection.js';
 
 const usersCollection = db.collection('users');
+const router = express.Router();
 
 router.post('/', async (req, res) => {
   const { _id, email } = req.body;
@@ -28,3 +30,5 @@ router.post('/', async (req, res) => {
   }
 });
 
+
+export default router;

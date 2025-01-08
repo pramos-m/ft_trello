@@ -11,8 +11,16 @@ function	App() {
   return (
 		<AuthProvider>
 			<Routes>
-				<Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>} />
-				<Route path="/board/:boardId" element={<ProtectedRoute><Board/></ProtectedRoute>} />
+				<Route path="/" element={
+					<ProtectedRoute>
+						<Home/>
+					</ProtectedRoute>
+				} />
+				<Route path="/board/:boardId" element={
+					<ProtectedRoute>
+						<Board/>
+					</ProtectedRoute>
+				} />
 				<Route path="/login" element={<Login/>} />
 			</Routes>
 		</AuthProvider>

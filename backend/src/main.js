@@ -1,12 +1,14 @@
 import express from "express";
 import session from "express-session";
-import passport from "./middleware/passport.js"; // Importaremos la configuración de passport
 
-import authRouter from "./auth.js";
-import usersRouter from "./users.js";
-import boardsRouter from "./boards.js";
-import tasksRouter from "./tasks.js";
-import listsRouter from "./lists.js";
+import passport from "./middleware/passport.js"; // Importaremos la configuración de passport
+import { isAuthenticated } from "./middleware/auth.js";
+
+import authRouter from "./routes/auth.js";
+import usersRouter from "./routes/users.js";
+import boardsRouter from "./routes/boards.js";
+import tasksRouter from "./routes/tasks.js";
+import listsRouter from "./routes/lists.js";
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -26,20 +28,20 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Rutas de autenticación
-router.use("/auth", authRouter);
+app.use("/auth", authRouter);
 
 // Rutas de usuarios
 // TMP: Ruta para crear un nuevo usuario
-router.use("/users", usersRouter);
+app.use("/users", isAuthenticated, usersRouter);
 
 // Rutas de boards
-router.use("/boards", boardsRouter);
+app.use("/boards", isAuthenticated, boardsRouter);
 
 // Rutas de tasks
-router.use("/tasks", tasksRouter);
+app.use("/tasks", isAuthenticated, tasksRouter);
 
 // Rutas de lists
-router.use("/lists", listsRouter);
+app.use("/lists", isAuthenticated, listsRouter);
 
 app.use((err, req, res, next) => {
     res.locals.message = err.message;

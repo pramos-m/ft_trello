@@ -3,8 +3,8 @@ import controller from "../controllers/tasks.js";
 
 const router = express.Router();
 
-  // Crear una nueva tarea
-  router.post("/", async (req, res) => {
+// Crear una nueva tarea
+router.post("/", async (req, res) => {
   const { listId, name, description, priority, effort, index } = req.body;
 
   if (!listId || !name /*|| !description*/)

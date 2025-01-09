@@ -132,6 +132,13 @@ export function BoardProvider({ children }) {
     });
   };
 
+  const getTotalFilteredCards = () => {
+    return Object.values(columns).reduce((total, column) => {
+      const filteredColumnCards = getFilteredCards(column.cards);
+      return total + filteredColumnCards.length;
+    }, 0);
+  };
+
   return (
     <BoardContext.Provider
       value={{
@@ -148,6 +155,7 @@ export function BoardProvider({ children }) {
         updateColumnDescription,
         updateFilters,
         getFilteredCards,
+        getTotalFilteredCards
       }}
     >
       {children}

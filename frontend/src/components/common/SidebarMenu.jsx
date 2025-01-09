@@ -6,7 +6,7 @@ import { useBoard } from '../../context/BoardContext';
 const SidebarMenu = ({ onClose }) => {
   const [openMenu, setOpenMenu] = useState(null);
   const [openSubMenu, setOpenSubMenu] = useState(null);
-  const { filters, updateFilters } = useBoard();
+  const { filters, updateFilters, getTotalFilteredCards } = useBoard();
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
@@ -23,6 +23,7 @@ const SidebarMenu = ({ onClose }) => {
     if (filters.priority !== 'None') count++;
     return count;
   };
+
 
   const effortLevels = [
     { name: 'None', symbols: [] },
@@ -117,7 +118,9 @@ const SidebarMenu = ({ onClose }) => {
           <Paperclip size={16} className="text-gray-700" />
           <span className="text-sm text-gray-900 font-medium">Tasks</span>
         </div>
-        <span className="bg-gray-900 text-white text-xs px-2 py-0.5 rounded-full">6</span>
+        <span className="bg-gray-900 text-white text-xs px-2 py-0.5 rounded-full">
+          {getTotalFilteredCards()}
+        </span>
       </div>
 
       {/* Filters Section */}
@@ -161,8 +164,15 @@ const SidebarMenu = ({ onClose }) => {
                   className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Clock size={16} className="text-gray-700" />
-                    <span className="text-sm text-gray-700">Effort</span>
+                  <img 
+                    key="1"
+                    src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+                    alt="Low effort" 
+                    width="20" 
+                    height="20" 
+                    className="inline-block"
+                  />
+                  <span className="text-sm text-gray-700">Effort</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">

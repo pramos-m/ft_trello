@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { useBoard } from '../context/BoardContext';
 import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
-import { Trash2, Star } from 'lucide-react';
-import DropdownMenu from '../components/common/DropdDownMenu';
+import { Trash2, Star, ChevronDown } from 'lucide-react';
+import DropdownMenu from '../components/common/DropDownMenu';
+import SidebarMenu from '../components/common/SidebarMenu';
 
 export default function Board() {
   const { columns, deleteCard, deleteColumn } = useBoard();
@@ -12,6 +13,7 @@ export default function Board() {
   const [isDraggingColumn, setIsDraggingColumn] = useState(false);
   const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false); // Mover esta línea dentro del componente
 
   const menuItems = [
     {
@@ -56,7 +58,24 @@ export default function Board() {
     <div className="min-h-screen bg-neutral-grey-50">
       <header className="border-b border-neutral-grey-200 bg-white px-6 py-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-xl font-medium text-neutral-grey-800">Mallorca</h1>
+          <div className="relative">
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="flex items-center gap-2 text-xl font-medium text-neutral-grey-800 hover:bg-gray-50 rounded px-2 py-1"
+            >
+              Mallorca
+              <ChevronDown 
+                size={20} 
+                className={`transition-transform ${showSidebar ? 'rotate-180' : ''}`} 
+              />
+            </button>
+            
+            {showSidebar && (
+              <div className="absolute left-0 mt-2 z-50">
+                <SidebarMenu />
+              </div>
+            )}
+          </div>
           <DropdownMenu items={menuItems} />
         </div>
       </header>
@@ -75,7 +94,7 @@ export default function Board() {
                     setDraggingCard={setDraggingCard}
                     index={index}
                     isDraggingColumn={isDraggingColumn}
-                    setIsDraggingColumn={setIsDraggingColumn}
+                    setIsDraggingColumn={setDraggingColumn}
                   />
                 ))}
                 <AddColumn />

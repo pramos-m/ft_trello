@@ -101,28 +101,11 @@ const SidebarMenu = ({ onClose }) => {
   ];
 
   const priorityLevels = [
-    { name: 'None', symbols: [] },
-    { 
-      name: 'Low', 
-      symbols: [<Clock key="1" size={20} className="text-gray-700" />]
-    },
-    { 
-      name: 'Medium', 
-      symbols: [
-        <Clock key="1" size={20} className="text-gray-700" />,
-        <Clock key="2" size={20} className="text-gray-700" />
-      ]
-    },
-    { 
-      name: 'High', 
-      symbols: [
-        <Clock key="1" size={20} className="text-gray-700" />,
-        <Clock key="2" size={20} className="text-gray-700" />,
-        <Clock key="3" size={20} className="text-gray-700" />
-      ]
-    }
+    { name: 'Low', symbols: [<Clock key="1" size={20} className="text-green-600" />] },
+    { name: 'Medium', symbols: [<Clock key="1" size={20} className="text-yellow-600" />] },
+    { name: 'High', symbols: [<Clock key="1" size={20} className="text-red-600" />] },
   ];
-
+    
   const [selectedEffort, setSelectedEffort] = useState(effortLevels[0]);
   const [selectedPriority, setSelectedPriority] = useState(priorityLevels[0]);
 

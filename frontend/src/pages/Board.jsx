@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useBoard } from '../context/BoardContext';
 import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
-import { Trash2, Star, ChevronDown } from 'lucide-react';
+import { Trash2, Star, ChevronLeft } from 'lucide-react';
 import DropdownMenu from '../components/common/DropDownMenu';
 import SidebarMenu from '../components/common/SidebarMenu';
 
@@ -13,7 +13,7 @@ export default function Board() {
   const [isDraggingColumn, setIsDraggingColumn] = useState(false);
   const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false); // Mover esta línea dentro del componente
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const menuItems = [
     {
@@ -28,6 +28,7 @@ export default function Board() {
     }
   ];
 
+  // Gestión de la papelera
   const handleTrashDragOver = (e) => {
     e.preventDefault();
     setIsDraggingOverTrash(true);
@@ -54,69 +55,100 @@ export default function Board() {
     setDraggingCard(null);
   };
 
+  // Abre/cierra el sidebar
+  const toggleSidebar = () => setShowSidebar(prev => !prev);
+
   return (
-    <div className="min-h-screen bg-neutral-grey-50">
-      <header className="border-b border-neutral-grey-200 bg-white px-6 py-4">
-        <div className="flex justify-between items-center">
-          <div className="relative">
+    <div className="min-h-screen bg-neutral-grey-50 flex">
+      {/* Overlay cuando el sidebar está abierto */}
+      <AnimatePresence>
+        {showSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={toggleSidebar}
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar */}
+      <AnimatePresence>
+        {showSidebar && (
+          <motion.div
+            initial={{ x: -320 }}
+            animate={{ x: 0 }}
+            exit={{ x: -320 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="fixed top-0 left-0 w-80 h-full bg-white shadow-xl z-20"
+          >
+            <SidebarMenu onClose={toggleSidebar} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex-1">
+        {/* Header */}
+        <header className="border-b border-neutral-grey-200 bg-white px-6 py-4 relative z-0">
+          <div className="flex justify-between items-center">
             <button
-              onClick={() => setShowSidebar(!showSidebar)}
+              onClick={toggleSidebar}
               className="flex items-center gap-2 text-xl font-medium text-neutral-grey-800 hover:bg-gray-50 rounded px-2 py-1"
             >
-              Mallorca
-              <ChevronDown 
-                size={20} 
-                className={`transition-transform ${showSidebar ? 'rotate-180' : ''}`} 
+              <ChevronLeft
+                size={20}
+                className={`transition-transform ${!showSidebar ? 'rotate-180' : ''}`}
               />
+              Mallorca
             </button>
-            
-            {showSidebar && (
-              <div className="absolute left-0 mt-2 z-50">
-                <SidebarMenu />
-              </div>
-            )}
+            <DropdownMenu items={menuItems} />
           </div>
-          <DropdownMenu items={menuItems} />
-        </div>
-      </header>
-      <div className="p-6">
-        <div className="flex items-start gap-4 overflow-x-auto pb-4">
-          <motion.div className="flex gap-4" >
-            {Object.values(columns).length === 0 ? (
-              <AddColumn />
-            ) : (
-              <>
-                {Object.values(columns).map((column, index) => (
-                  <Column
-                    key={column.id}
-                    column={column}
-                    draggingCard={draggingCard}
-                    setDraggingCard={setDraggingCard}
-                    index={index}
-                    isDraggingColumn={isDraggingColumn}
-                    setIsDraggingColumn={setDraggingColumn}
-                  />
-                ))}
+        </header>
+
+        {/* Contenido principal */}
+        <div className={`p-6 transition-all duration-300 ${showSidebar ? 'blur-sm' : ''}`}>
+          <div className="flex items-start gap-4 overflow-x-auto pb-4">
+            <motion.div className="flex gap-4">
+              {/* Añadir columnas o mostrar las existentes */}
+              {Object.values(columns).length === 0 ? (
                 <AddColumn />
-              </>
-            )}
-          </motion.div>
+              ) : (
+                <>
+                  {Object.values(columns).map((column, index) => (
+                    <Column
+                      key={column.id}
+                      column={column}
+                      draggingCard={draggingCard}
+                      setDraggingCard={setDraggingCard}
+                      index={index}
+                      isDraggingColumn={isDraggingColumn}
+                      setIsDraggingColumn={setIsDraggingColumn}
+                    />
+                  ))}
+                  <AddColumn />
+                </>
+              )}
+            </motion.div>
+          </div>
         </div>
-      </div>
-      <div
-        className={`fixed bottom-6 right-6 rounded-lg border-2 ${
-          isDraggingOverTrash
-            ? 'border-red-500 bg-red-100'
-            : 'border-neutral-grey-300 bg-white'
-        } p-4 shadow-lg transition-colors`}
-        onDragOver={handleTrashDragOver}
-        onDragLeave={handleTrashDragLeave}
-        onDrop={handleTrashDrop}
-      >
-        <Trash2
-          size={24}
-          className={isDraggingOverTrash ? 'text-red-500' : 'text-neutral-grey-600'}
-        />
+
+        {/* Papelera flotante */}
+        <div
+          className={`fixed bottom-6 right-6 rounded-lg border-2 ${
+            isDraggingOverTrash
+              ? 'border-red-500 bg-red-100'
+              : 'border-neutral-grey-300 bg-white'
+          } p-4 shadow-lg transition-colors`}
+          onDragOver={handleTrashDragOver}
+          onDragLeave={handleTrashDragLeave}
+          onDrop={handleTrashDrop}
+        >
+          <Trash2
+            size={24}
+            className={isDraggingOverTrash ? 'text-red-500' : 'text-neutral-grey-600'}
+          />
+        </div>
       </div>
     </div>
   );

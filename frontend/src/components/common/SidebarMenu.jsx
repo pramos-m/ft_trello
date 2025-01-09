@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronLeft, Paperclip, Filter, Clock } from 'lucide-react';
+import { ChevronDown, ChevronLeft, Paperclip, Filter, Clock, Palette } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBoard } from '../../context/BoardContext';
 
@@ -7,6 +7,7 @@ const SidebarMenu = ({ onClose }) => {
   const [openMenu, setOpenMenu] = useState(null);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const { filters, updateFilters, getTotalFilteredCards } = useBoard();
+  const [selectedColor, setSelectedColor] = useState('violeta');
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
@@ -24,6 +25,15 @@ const SidebarMenu = ({ onClose }) => {
     return count;
   };
 
+  const colors = [
+    { name: 'Rojo', color: '#E74C3C' },
+    { name: 'Naranja', color: '#F39C12' },
+    { name: 'Verde', color: '#27AE60' },
+    { name: 'Cian', color: '#3498DB' },
+    { name: 'Azul', color: '#2563EB' },
+    { name: 'Violeta', color: '#6B46C1' },
+    { name: 'Negro', color: '#1E293B' }
+  ];
 
   const effortLevels = [
     { name: 'None', symbols: [] },
@@ -123,8 +133,60 @@ const SidebarMenu = ({ onClose }) => {
         </span>
       </div>
 
+      {/* Background Section */}
+      <div className="relative">
+        <button
+          onClick={() => toggleMenu('background')}
+          className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg group"
+        >
+          <div className="flex items-center gap-2.5">
+            <Palette size={16} className="text-gray-700" />
+            <span className="text-sm text-gray-700 group-hover:text-gray-900">Background</span>
+          </div>
+          <ChevronDown
+            size={16}
+            className={`text-gray-500 transition-transform duration-200 ${
+              openMenu === 'background' ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+
+        <AnimatePresence>
+          {openMenu === 'background' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute right-0 mt-2 py-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10"
+            >
+              {colors.map((color) => (
+                <button
+                  key={color.name}
+                  onClick={() => {
+                    setSelectedColor(color.name.toLowerCase());
+                    toggleMenu('background');
+                  }}
+                  className="flex items-center w-full px-4 py-2 hover:bg-gray-50"
+                >
+                  <span
+                    className="w-4 h-4 rounded-full mr-3"
+                    style={{ backgroundColor: color.color }}
+                  />
+                  <span className="text-gray-700">{color.name}</span>
+                  {selectedColor === color.name.toLowerCase() && (
+                    <span className="ml-auto">✓</span>
+                  )}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* Filters Section */}
       <div className="space-y-2">
+        {/* ... Resto del código de filtros ... */}
         <button
           onClick={() => toggleMenu('filters')}
           className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg group"
@@ -164,15 +226,15 @@ const SidebarMenu = ({ onClose }) => {
                   className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center gap-2.5">
-                  <img 
-                    key="1"
-                    src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
-                    alt="Low effort" 
-                    width="20" 
-                    height="20" 
-                    className="inline-block"
-                  />
-                  <span className="text-sm text-gray-700">Effort</span>
+                    <img 
+                      key="1"
+                      src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+                      alt="Low effort" 
+                      width="20" 
+                      height="20" 
+                      className="inline-block"
+                    />
+                    <span className="text-sm text-gray-700">Effort</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">

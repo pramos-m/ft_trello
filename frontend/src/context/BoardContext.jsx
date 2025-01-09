@@ -4,6 +4,10 @@ const BoardContext = createContext();
 
 export function BoardProvider({ children }) {
   const [columns, setColumns] = useState({});
+  const [filters, setFilters] = useState({
+    effort: 'None',
+    priority: 'None'
+  });
 
   const addCard = (columnId, card) => {
     setColumns((prev) => ({
@@ -113,10 +117,26 @@ export function BoardProvider({ children }) {
     }));
   };
 
+  const updateFilters = (newFilters) => {
+    setFilters(prev => ({
+      ...prev,
+      ...newFilters
+    }));
+  };
+
+  const getFilteredCards = (cards) => {
+    return cards.filter(card => {
+      const effortMatch = filters.effort === 'None' || card.effort === filters.effort;
+      const priorityMatch = filters.priority === 'None' || card.priority === filters.priority;
+      return effortMatch && priorityMatch;
+    });
+  };
+
   return (
     <BoardContext.Provider
       value={{
         columns,
+        filters,
         addCard,
         updateCard,
         deleteCard,
@@ -126,11 +146,13 @@ export function BoardProvider({ children }) {
         moveCard,
         reorderColumns,
         updateColumnDescription,
+        updateFilters,
+        getFilteredCards,
       }}
     >
       {children}
     </BoardContext.Provider>
   );
-} 
+}
 
 export const useBoard = () => useContext(BoardContext);

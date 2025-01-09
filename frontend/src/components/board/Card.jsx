@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBoard } from "../../context/BoardContext";
-import { Clock, Dumbbell } from "lucide-react";
+import { Clock } from "lucide-react";
 
 const MAX_VISIBLE_CHARS = 383;
 
@@ -9,26 +9,71 @@ const effortLevels = [
   { name: 'None', symbols: [] },
   { 
     name: 'Low', 
-    symbols: [<Dumbbell key="1" size={20} className="text-gray-600" />]
+    symbols: [
+      <img 
+        key="1"
+        src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+        alt="Low effort" 
+        width="20" 
+        height="20" 
+        className="inline-block"
+      />
+    ] 
   },
   { 
     name: 'Medium', 
     symbols: [
-      <Dumbbell key="1" size={20} className="text-gray-600" />,
-      <Dumbbell key="2" size={20} className="text-gray-600" />
-    ]
+      <img 
+        key="1"
+        src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+        alt="Medium effort" 
+        width="20" 
+        height="20"
+        className="inline-block mr-0.5"
+      />,
+      <img 
+        key="2"
+        src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+        alt="Medium effort" 
+        width="20" 
+        height="20"
+        className="inline-block"
+      />
+    ] 
   },
   { 
     name: 'High', 
     symbols: [
-      <Dumbbell key="1" size={20} className="text-gray-600" />,
-      <Dumbbell key="2" size={20} className="text-gray-600" />,
-      <Dumbbell key="3" size={20} className="text-gray-600" />
-    ]
+      <img 
+        key="1"
+        src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+        alt="High effort" 
+        width="20" 
+        height="20"
+        className="inline-block mr-0.5"
+      />,
+      <img 
+        key="2"
+        src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+        alt="High effort" 
+        width="20" 
+        height="20"
+        className="inline-block mr-0.5"
+      />,
+      <img 
+        key="3"
+        src="https://img.icons8.com/?size=100&id=YNm4lzVFByuZ&format=png&color=000000" 
+        alt="High effort" 
+        width="20" 
+        height="20"
+        className="inline-block"
+      />
+    ] 
   }
 ];
 
 const priorityLevels = [
+  { name: 'None', symbols: [] },
   { name: 'Low', symbols: [<Clock key="1" size={20} className="text-green-600" />] },
   { name: 'Medium', symbols: [<Clock key="1" size={20} className="text-yellow-600" />] },
   { name: 'High', symbols: [<Clock key="1" size={20} className="text-red-600" />] },
@@ -83,17 +128,16 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
         setIsEditing(false);
         if (title !== card.title || description !== card.description) {
           updateCard(columnId, card.id, { 
+            ...card,
             title, 
-            description, 
-            effort: effort || 'Low',
-            priority: priority || 'Low'
+            description,
           });
         }
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [title, description, effort, priority, columnId, card.id, updateCard, card.title, card.description]);
+  }, [title, description, columnId, card, updateCard]);
 
   const getTruncatedDescription = (text) => {
     if (!text || text.length <= MAX_VISIBLE_CHARS) return text;
@@ -136,18 +180,18 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
           e.stopPropagation();
           if (!openMenu) setIsEditing(true);
         }}>
-          <div className="flex items-start justify-between">
-            <h4 className="text-sm font-medium text-neutral-900 break-words">
+          <div className="flex items-start justify-between gap-2">
+            <h4 className="text-sm font-medium text-neutral-900 break-words flex-1">
               {title}
             </h4>
-            <div className="flex items-center space-x-1 ml-2" ref={menuRef}>
+            <div className="flex items-center gap-2 flex-shrink-0" ref={menuRef}>
               <div className="relative">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenMenu(openMenu === 'effort' ? null : 'effort');
                   }}
-                  className="flex items-center hover:bg-gray-50 p-1 rounded"
+                  className="flex items-center hover:bg-gray-50 p-1 rounded min-w-[28px] justify-center"
                 >
                   {currentEffort?.symbols}
                 </button>
@@ -157,7 +201,7 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10"
+                      className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10 min-w-[120px]"
                     >
                       {effortLevels.map((level) => (
                         <button
@@ -166,10 +210,12 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
                             e.stopPropagation();
                             handleEffortChange(level.name);
                           }}
-                          className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50"
+                          className="flex items-center gap-3 w-full px-3 py-2 hover:bg-gray-50"
                         >
-                          <div className="flex gap-1">{level.symbols}</div>
-                          <span className="text-sm">{level.name}</span>
+                          <div className="flex gap-0.5 min-w-[60px] items-center">
+                            {level.symbols}
+                          </div>
+                          <span className="text-sm text-gray-700">{level.name}</span>
                         </button>
                       ))}
                     </motion.div>
@@ -182,7 +228,7 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
                     e.stopPropagation();
                     setOpenMenu(openMenu === 'priority' ? null : 'priority');
                   }}
-                  className="flex items-center hover:bg-gray-50 p-1 rounded"
+                  className="flex items-center hover:bg-gray-50 p-1 rounded min-w-[28px] justify-center"
                 >
                   {currentPriority?.symbols}
                 </button>
@@ -192,7 +238,7 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10"
+                      className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10 min-w-[120px]"
                     >
                       {priorityLevels.map((level) => (
                         <button
@@ -201,10 +247,12 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
                             e.stopPropagation();
                             handlePriorityChange(level.name);
                           }}
-                          className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50"
+                          className="flex items-center gap-3 w-full px-3 py-2 hover:bg-gray-50"
                         >
-                          <div className="flex gap-1">{level.symbols}</div>
-                          <span className="text-sm">{level.name}</span>
+                          <div className="flex gap-0.5 min-w-[60px] items-center">
+                            {level.symbols}
+                          </div>
+                          <span className="text-sm text-gray-700">{level.name}</span>
                         </button>
                       ))}
                     </motion.div>

@@ -14,6 +14,8 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
   const [isDraggingToTrash, setIsDraggingToTrash] = useState(false);
   const [placeholderHeight, setPlaceholderHeight] = useState(0);
   const [placeholderIndex, setPlaceholderIndex] = useState(null);
+  const { getFilteredCards } = useBoard();
+  
   const MAX_VISIBLE_DESCRIPTION_LENGTH = 100;
 
   const editRef = useRef(null);
@@ -291,8 +293,8 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
           ref={cardsContainerRef} 
           className="px-4 pb-4 space-y-2 min-h-[1px]"
         >
-          <AnimatePresence mode="popLayout">
-            {column.cards.map((card, idx) => (
+          <AnimatePresence mode="popLayout">c
+            {getFilteredCards(column.cards).map((card, idx) => (
               <motion.div
                 key={card.id}
                 layout

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 
-import AuthContext from "../context/AuthContext.js";
+import AuthContext from "../../context/AuthContext.js";
 
 function	AuthProvider({ children }) {
 	const	[isAuthenticated, setIsAuthenticated] = useState(false);

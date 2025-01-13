@@ -15,9 +15,9 @@
       "description": "Description of the list, optional"
     },
 	  "index": {
-	    "bsonType": "int",
-	    "minimum": 0,
-	    "description": "Integer to represent the position on the board"
+	  	"bsonType": "int",
+	  	"minimum": 0,
+	  	"description": "Integer to represent the position on the board"
     },
     "boardId": {
       "bsonType": "objectId",

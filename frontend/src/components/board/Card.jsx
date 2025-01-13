@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useBoard } from "../../context/BoardContext";
+import useBoard from "../../hooks/useBoard.js";
 
 const MAX_VISIBLE_CHARS = 383;
 

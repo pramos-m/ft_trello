@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useBoard } from '../context/BoardContext';
+import useBoard from '../hooks/useBoard.js';
 import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
 import { Trash2, Star, ChevronLeft } from 'lucide-react';

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { getBoards } from "../services/boards.js";
 
-export function	useBoards() {
+function	useBoards() {
 	const	[boards, setBoards] = useState([]);
 	const	[error, setError] = useState(null);
 
@@ -15,3 +15,5 @@ export function	useBoards() {
 	useEffect(refreshBoards, []);
 	return ([boards, refreshBoards, error]);
 }
+
+export default useBoards;

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
-import { useBoard } from '../../context/BoardContext';
+import { useState } from "react";
+import { Plus, X } from "lucide-react";
+import useBoard from "../../hooks/useBoard.js";
 
 export default function AddCard({ columnId }) {
   const { addCard } = useBoard();

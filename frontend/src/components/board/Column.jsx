@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useBoard } from "../../context/BoardContext";
+import useBoard from "../../hooks/useBoard.js";
 import Card from "./Card";
 import AddCard from "./AddCard";
 

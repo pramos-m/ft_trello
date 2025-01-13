@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, X } from 'lucide-react';
-import { useBoard } from '../../context/BoardContext';
+import useBoard from '../../hooks/useBoard.js';
 
 export default function AddColumn() {
   const { addColumn } = useBoard();

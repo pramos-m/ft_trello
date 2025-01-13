@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router";
 
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
 import Board from "./pages/Board.jsx";
-import Login from "./pages/Login.jsx";
-import AuthProvider from "./components/AuthProvider.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import { BoardProvider } from "./context/BoardContext";
+import AuthProvider from "./components/providers/AuthProvider.jsx";
+import BoardProvider from "./components/providers/BoardProvider.jsx";
 
 function	App() {
   return (

@@ -1,4 +1,4 @@
-import { useBoards } from "../hooks/useBoards.js";
+import useBoards from "../hooks/useBoards.js";
 import { Logout } from "../components/Logout.jsx";
 import { BoardsListLayout } from "../components/BoardsListLayout.jsx";
 

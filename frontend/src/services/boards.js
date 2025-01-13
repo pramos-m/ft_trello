@@ -1,31 +1,14 @@
+import fetcher from "./fetcher.js";
 
 export function	getBoards() {
-	return (
-		fetch("/api/boards/me", { method: "GET" })
-			.then(res => {
-				if (!res.ok)
-					throw new Error("Failed to fetch boards");
-				return (res.json());;
-			})
-	);
+	return (fetcher.getJson({
+		url: "/api/boards/me"
+	}));
 }
 
 export function	createBoard({data}) {
-	return (
-		fetch("/api/boards/", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		})
-			.then(res => {
-				if (!res.ok)
-				{
-					console.log(res);
-					throw new Error("Failed to fetch boards");
-				}
-				return (res.json());
-			})
-	);
+	return (fetcher.getJson({
+		url: "/api/boards",
+		data
+	}));
 }

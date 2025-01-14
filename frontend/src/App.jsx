@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
-import Board from "./pages/Board.jsx";
+import Board from "./pages/MyBoard.jsx";
 import AuthProvider from "./components/providers/AuthProvider.jsx";
 import BoardProvider from "./components/providers/BoardProvider.jsx";
 

@@ -192,7 +192,7 @@ const controller = {
     const newBoard = {
       // _id: new ObjectId(),
       name: data.name,
-      color: "#FF00FF",
+      color: "#F1F4FF",
       favorite: data.favorite || false,
       date: new Date(),
       userId: new ObjectId(data.userId),

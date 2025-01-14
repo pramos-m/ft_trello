@@ -22,7 +22,7 @@ function	useBoard() {
 			.catch(err => setError(err))
 	};
 
-	useEffect(refreshBoard, id);
+	useEffect(refreshBoard, [id]);
 	return ([board, refreshBoard, removeBoard, error]);
 }
 

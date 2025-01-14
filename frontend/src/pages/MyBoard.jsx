@@ -2,12 +2,65 @@ import { useParams } from "react-router";
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import useBoard from '../hooks/useBoard.js';
+// import useBoard from '../hooks/useBoard.js';
+import useBoard from '../hooks/MyUseBoard.js';
 import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
 import { Trash2, Star, ChevronLeft } from 'lucide-react';
 import DropdownMenu from '../components/common/DropDownMenu';
 import SidebarMenu from '../components/common/SidebarMenu';
+
+function	Trash() {
+  const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
+	const	iconSize = 24;
+
+  const handleTrashDragOver = (e) => {
+    e.preventDefault();
+    setIsDraggingOverTrash(true);
+		return ;
+  };
+
+  const handleTrashDragLeave = () => {
+    setIsDraggingOverTrash(false);
+		return ;
+  };
+
+  const handleTrashDrop = (e) => {
+    e.preventDefault();
+    // const columnId = e.dataTransfer.getData('columnId');
+    // if (columnId && columns[columnId]) {
+    //   deleteColumn(columnId);
+    // } else if (draggingCard) {
+    //   const columnId = Object.keys(columns).find((colId) =>
+    //     columns[colId].cards.some((card) => card.id === draggingCard.id)
+    //   );
+    //   if (columnId) {
+    //     deleteCard(columnId, draggingCard.id);
+    //   }
+    // }
+    setIsDraggingOverTrash(false);
+    // setDraggingCard(null);
+		return ;
+  };
+
+	return (
+		<div
+			className={`fixed bottom-6 right-6 rounded-lg border-2 ${
+				isDraggingOverTrash
+					? 'border-red-500 bg-red-100'
+					: 'border-neutral-grey-300 bg-white'
+			} p-4 shadow-lg transition-colors`}
+			onDragOver={handleTrashDragOver}
+			onDragLeave={handleTrashDragLeave}
+			onDrop={handleTrashDrop}
+		>
+			<Trash2
+				size={iconSize}
+				className={isDraggingOverTrash ? 'text-red-500' : 'text-neutral-grey-600'}
+			/>
+		</div>
+	);
+}
 
 function	BoardMenu() {
 	const [isFavorite, setIsFavorite] = useState(false);
@@ -34,7 +87,7 @@ function	BoardHeader({title}) {
 	const	showSidebar = false;
 
 	return (
-		<header className="border-b border-neutral-grey-200 bg-white px-6 py-4 relative z-0">
+		<header className="px-6 py-4 relative z-0">
 			<div className="flex justify-between items-center">
 				<button
 					onClick={toggleSidebar}
@@ -46,18 +99,37 @@ function	BoardHeader({title}) {
 					/>
 					<h1 className="text-xl font-medium text-neutral-grey-800">{title}</h1>
 				</button>
+				<BoardMenu/>
 			</div>
-			<BoardMenu/>
 		</header>
 	);
 }
 
-function	Board() {
-	const	{ title } = useBoard();
-
+function	BoardBody() {
 	return (
 		<div>
-			<BoardHeader title="Mallorca"/>
+		</div>
+	);
+}
+
+function	Board() {
+	const	[ board, refreshBoard, removeBoard, error ] = useBoard();
+
+	return (
+		<div
+			className="w-screen h-screen"
+			style={{backgroundColor: board.color}}>
+			{
+				error ?
+					<h1 className="text-xl text-red-500 font-semibold">
+						There was some error trying to get board info
+					</h1>
+				:
+					<>
+						<BoardHeader title={board.name}/>
+						<BoardBody />
+					</>
+			}
 		</div>
 	);
 }
@@ -68,36 +140,8 @@ function	BoardPrev() {
   const { columns, deleteCard, deleteColumn } = useBoard();
   const [draggingCard, setDraggingCard] = useState(null);
   const [isDraggingColumn, setIsDraggingColumn] = useState(false);
-  const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
-
-  // Gestión de la papelera
-  const handleTrashDragOver = (e) => {
-    e.preventDefault();
-    setIsDraggingOverTrash(true);
-  };
-
-  const handleTrashDragLeave = () => {
-    setIsDraggingOverTrash(false);
-  };
-
-  const handleTrashDrop = (e) => {
-    e.preventDefault();
-    const columnId = e.dataTransfer.getData('columnId');
-    if (columnId && columns[columnId]) {
-      deleteColumn(columnId);
-    } else if (draggingCard) {
-      const columnId = Object.keys(columns).find((colId) =>
-        columns[colId].cards.some((card) => card.id === draggingCard.id)
-      );
-      if (columnId) {
-        deleteCard(columnId, draggingCard.id);
-      }
-    }
-    setIsDraggingOverTrash(false);
-    setDraggingCard(null);
-  };
 
   // Abre/cierra el sidebar
   const toggleSidebar = () => setShowSidebar(prev => !prev);
@@ -163,21 +207,6 @@ function	BoardPrev() {
         </div>
 
         {/* Papelera flotante */}
-        <div
-          className={`fixed bottom-6 right-6 rounded-lg border-2 ${
-            isDraggingOverTrash
-              ? 'border-red-500 bg-red-100'
-              : 'border-neutral-grey-300 bg-white'
-          } p-4 shadow-lg transition-colors`}
-          onDragOver={handleTrashDragOver}
-          onDragLeave={handleTrashDragLeave}
-          onDrop={handleTrashDrop}
-        >
-          <Trash2
-            size={24}
-            className={isDraggingOverTrash ? 'text-red-500' : 'text-neutral-grey-600'}
-          />
-        </div>
       </div>
     </div>
   );

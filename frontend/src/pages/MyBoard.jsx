@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import useBoard from '../hooks/MyUseBoard.js';
 import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
-import { Trash2, Star, ChevronLeft } from 'lucide-react';
+import { Trash2, Star } from 'lucide-react';
 import DropdownMenu from '../components/common/DropDownMenu';
 import SidebarMenu from '../components/common/SidebarMenu';
 
@@ -62,7 +62,7 @@ function	Trash() {
 	);
 }
 
-function	BoardMenu() {
+function	BoardDropdown() {
 	const [isFavorite, setIsFavorite] = useState(false);
 	const menuItems = [
 		{
@@ -82,24 +82,54 @@ function	BoardMenu() {
 	);
 }
 
-function	BoardHeader({title}) {
-	const	toggleSidebar = () => {};
-	const	showSidebar = false;
+function	BoardSidebar({title}) {
+	const	[showSidebar, setShowSidebar] = useState(false);
 
+	const	toggleSidebar = () => setShowSidebar(prev => !prev);
+
+	return (
+		<div>
+			<button
+				onClick={toggleSidebar}
+				className="flex items-center gap-2 hover:bg-gray-50 rounded px-2 py-1"
+			>
+				<h1 className="text-xl font-semibold text-neutral-grey-800">{title}</h1>
+				<img src="/icons/arrowRight.svg" className={`transition-transform ${showSidebar ? 'rotate-180' : ''}`}/>
+			</button>
+
+      {/* Overlay cuando el sidebar está abierto */}
+			<AnimatePresence>
+				{showSidebar && 
+					<>
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							onClick={toggleSidebar}
+							className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10"
+						/>
+						<motion.div
+							initial={{ x: -320 }}
+							animate={{ x: 0 }}
+							exit={{ x: -320 }}
+							transition={{ type: "spring", stiffness: 300, damping: 30 }}
+							className="fixed top-0 left-0 w-80 h-full bg-white shadow-xl z-20"
+						>
+							<SidebarMenu onClose={toggleSidebar} />
+						</motion.div>
+					</>
+				}
+			</AnimatePresence>
+		</div>
+	);
+}
+
+function	BoardHeader({title}) {
 	return (
 		<header className="px-6 py-4 relative z-0">
 			<div className="flex justify-between items-center">
-				<button
-					onClick={toggleSidebar}
-					className="flex items-center gap-2 hover:bg-gray-50 rounded px-2 py-1"
-				>
-					<ChevronLeft
-						size={20}
-						className={`transition-transform ${!showSidebar ? 'rotate-180' : ''}`}
-					/>
-					<h1 className="text-xl font-medium text-neutral-grey-800">{title}</h1>
-				</button>
-				<BoardMenu/>
+				<BoardSidebar title={title}/>
+				<BoardDropdown/>
 			</div>
 		</header>
 	);

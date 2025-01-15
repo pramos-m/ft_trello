@@ -147,14 +147,23 @@ const LabelMenu = ({ isOpen, onClose, selectedLabels, onLabelSelect, availableLa
 
   const colorOptions = [
     { name: 'Rojo', bgColor: 'bg-red-500', textColor: 'text-red-800', bgLight: 'bg-red-100' },
+    { name: 'Rosa', bgColor: 'bg-pink-500', textColor: 'text-pink-800', bgLight: 'bg-pink-100' },
+    { name: 'Rosa Claro', bgColor: 'bg-rose-500', textColor: 'text-rose-800', bgLight: 'bg-rose-100' },
+    { name: 'Fucsia', bgColor: 'bg-fuchsia-500', textColor: 'text-fuchsia-800', bgLight: 'bg-fuchsia-100' },
     { name: 'Naranja', bgColor: 'bg-orange-500', textColor: 'text-orange-800', bgLight: 'bg-orange-100' },
+    { name: 'Ámbar', bgColor: 'bg-amber-500', textColor: 'text-amber-800', bgLight: 'bg-amber-100' },
+    { name: 'Amarillo', bgColor: 'bg-yellow-500', textColor: 'text-yellow-800', bgLight: 'bg-yellow-100' },
+    { name: 'Lima', bgColor: 'bg-lime-500', textColor: 'text-lime-800', bgLight: 'bg-lime-100' },
     { name: 'Verde', bgColor: 'bg-green-500', textColor: 'text-green-800', bgLight: 'bg-green-100' },
+    { name: 'Esmeralda', bgColor: 'bg-emerald-500', textColor: 'text-emerald-800', bgLight: 'bg-emerald-100' },
     { name: 'Cian', bgColor: 'bg-cyan-500', textColor: 'text-cyan-800', bgLight: 'bg-cyan-100' },
     { name: 'Azul', bgColor: 'bg-blue-500', textColor: 'text-blue-800', bgLight: 'bg-blue-100' },
+    { name: 'Índigo', bgColor: 'bg-indigo-500', textColor: 'text-indigo-800', bgLight: 'bg-indigo-100' },
     { name: 'Violeta', bgColor: 'bg-violet-500', textColor: 'text-violet-800', bgLight: 'bg-violet-100' },
+    { name: 'Púrpura', bgColor: 'bg-purple-500', textColor: 'text-purple-800', bgLight: 'bg-purple-100' },
     { name: 'Negro', bgColor: 'bg-gray-900', textColor: 'text-gray-800', bgLight: 'bg-gray-100' }
   ];
-
+  
   const filteredLabels = availableLabels.filter(label =>
     label.name.toLowerCase().includes(labelInput.toLowerCase())
   );
@@ -272,20 +281,20 @@ const LabelMenu = ({ isOpen, onClose, selectedLabels, onLabelSelect, availableLa
                   </AnimatePresence>
                 </div>
               ))}
-              {labelInput && !filteredLabels.some(label => label.name.toLowerCase() === labelInput.toLowerCase()) && (
-                <div className="px-2 pb-2">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleCreateLabel();
-                    }}
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded"
-                  >
-                    Crear "{labelInput}"
-                  </button>
-                </div>
-              )}
+            {labelInput && !filteredLabels.some(label => label.name.toLowerCase() === labelInput.toLowerCase()) && (
+              <div className="px-2 pb-2">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCreateLabel();
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded"
+                >
+                  Crear "{labelInput}"
+                </button>
+              </div>
+            )}
             </div>
           </div>
         </motion.div>
@@ -311,13 +320,18 @@ const Card = () => {
   ]);
 
   const handleLabelSelect = (label) => {
+    // Si la label no existe en availableLabels, añadirla
+    if (!availableLabels.find(l => l.id === label.id)) {
+      setAvailableLabels(prev => [...prev, label]);
+    }
+    
+    // Actualizar las labels seleccionadas
     setSelectedLabels(prev => 
       prev.includes(label.id) 
         ? prev.filter(id => id !== label.id)
         : [...prev, label.id]
     );
   };
-
   const handleDeleteLabel = (labelToDelete) => {
     setAvailableLabels(prev => prev.filter(label => label.id !== labelToDelete.id));
     setSelectedLabels(prev => prev.filter(id => id !== labelToDelete.id));

@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useBoard } from "../../context/BoardContext";
 import { Clock, X, MoreHorizontal, Trash2, Check } from "lucide-react";
+
+const MAX_VISIBLE_CHARS = 383;
 
 const effortLevels = [
   { name: 'None', symbols: [] },
@@ -68,6 +71,7 @@ const effortLevels = [
     ] 
   }
 ];
+
 const priorityLevels = [
   { name: 'None', symbols: [] },
   { name: 'Low', symbols: [<Clock key="1" size={20} className="text-green-600" />] },
@@ -86,15 +90,15 @@ const LabelMenu = ({ isOpen, onClose, selectedLabels, onLabelSelect, availableLa
     const handleClickOutside = (event) => {
       if (
         menuRef.current && 
-        !menuRef.current.contains(event.target) // Clic fuera del menú principal
+        !menuRef.current.contains(event.target) 
       ) {
-        onClose(); // Cierra el menú completo
+        onClose();
       } else if (
         subMenuRef.current &&
-        !subMenuRef.current.contains(event.target) && // Clic fuera del submenú
-        menuRef.current.contains(event.target) // Pero dentro del menú principal
+        !subMenuRef.current.contains(event.target) &&
+        menuRef.current.contains(event.target) 
       ) {
-        setActiveLabel(null); // Cierra solo el submenú
+        setActiveLabel(null); 
       }
     };
 
@@ -303,14 +307,15 @@ const LabelMenu = ({ isOpen, onClose, selectedLabels, onLabelSelect, availableLa
   );
 };
 
-const Card = () => {
+export default function Card({ card, columnId, index, setDraggingCard }) {
+  const { updateCard } = useBoard();
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState('Italia');
-  const [description, setDescription] = useState('Lorem ipsum dolor sit amet...');
+  const [title, setTitle] = useState(card.title);
+  const [description, setDescription] = useState(card.description || '');
   const [isDragging, setIsDragging] = useState(false);
   const [openMenu, setOpenMenu] = useState(null);
-  const [effort, setEffort] = useState('Low');
-  const [priority, setPriority] = useState('Low');
+  const [effort, setEffort] = useState(card.effort || 'Low');
+  const [priority, setPriority] = useState(card.priority || 'Low');
   const [showLabelInput, setShowLabelInput] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState(['blog', 'frontend']);
   const [availableLabels, setAvailableLabels] = useState([
@@ -318,14 +323,17 @@ const Card = () => {
     { id: 'frontend', name: 'Frontend', color: 'bg-pink-100 text-pink-800' },
     { id: 'backend', name: 'Backend', color: 'bg-yellow-100 text-yellow-800' },
   ]);
+  
+
+  const cardRef = useRef(null);
+  const menuRef = useRef(null);
+
 
   const handleLabelSelect = (label) => {
-    // Si la label no existe en availableLabels, añadirla
     if (!availableLabels.find(l => l.id === label.id)) {
       setAvailableLabels(prev => [...prev, label]);
     }
     
-    // Actualizar las labels seleccionadas
     setSelectedLabels(prev => 
       prev.includes(label.id) 
         ? prev.filter(id => id !== label.id)
@@ -351,49 +359,234 @@ const Card = () => {
     );
   };
 
-  const handleMenuChange = (menuType, value) => {
-    if (menuType === 'effort') {
-      setEffort(value);
-    } else if (menuType === 'priority') {
-      setPriority(value);
+  const handleDragStart = (e) => {
+    e.stopPropagation();
+    setDraggingCard(card);
+    setIsDragging(true);
+    e.dataTransfer.effectAllowed = "move";
+    e.target.classList.add('dragging-card');
+  };
+
+  const handleDragEnd = (e) => {
+    e.stopPropagation();
+    setDraggingCard(null);
+    setIsDragging(false);
+    e.target.classList.remove('dragging-card');
+  };
+
+  const handleSaveCard = () => {
+    setIsEditing(false);
+    if (title !== card.title || description !== card.description) {
+      updateCard(columnId, card.id, { 
+        ...card,
+        title, 
+        description,
+      });
     }
+  };
+
+  const handleEffortChange = (level) => {
+    setEffort(level);
+    updateCard(columnId, card.id, { ...card, effort: level });
     setOpenMenu(null);
   };
 
+  const handlePriorityChange = (level) => {
+    setPriority(level);
+    updateCard(columnId, card.id, { ...card, priority: level });
+    setOpenMenu(null);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenu(null);
+      }
+      if (cardRef.current && !cardRef.current.contains(event.target)) {
+        handleSaveCard();
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [title, description]);
+
+  const getTruncatedDescription = (text) => {
+    if (!text || text.length <= MAX_VISIBLE_CHARS) return text;
+    return text.substring(0, MAX_VISIBLE_CHARS) + '...';
+  };
+
+  const currentEffort = effortLevels.find(level => level.name === effort) || effortLevels[0];
+  const currentPriority = priorityLevels.find(level => level.name === priority) || priorityLevels[0];
+  
   return (
     <motion.div
-      className="bg-white rounded-xl shadow-sm p-4 space-y-4"
-      onClick={() => !isEditing && setIsEditing(true)}
+      ref={cardRef}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      className={`relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 
+        ${isDragging ? 'opacity-50' : 'opacity-100'}`}
+      onClick={() => !openMenu && setIsEditing(true)}
     >
-      <div className="relative">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {selectedLabels.map(labelId => {
-            const label = availableLabels.find(l => l.id === labelId);
-            if (!label) return null;
-            return (
-              <div key={label.id} className="relative group">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${label.color}`}>
-                  {label.name}
-                </span>
+      <div className="p-4">
+        {isEditing ? (
+          <div className="space-y-3" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start gap-2">
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="flex-1 min-w-0 px-3 py-2 text-base rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Add title..."
+                autoFocus
+              />
+              <div className="flex items-center gap-2 flex-shrink-0" ref={menuRef}>
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenu(openMenu === 'effort' ? null : 'effort');
+                    }}
+                    className="flex items-center hover:bg-gray-50 p-1 rounded-lg"
+                  >
+                    {currentEffort.symbols}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {openMenu === 'effort' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10 min-w-[160px]"
+                      >
+                        {effortLevels.map((level) => (
+                          <button
+                            key={level.name}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEffortChange(level.name);
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2 hover:bg-gray-50"
+                          >
+                            <div className="flex gap-0.5 min-w-[60px] items-center">
+                              {level.symbols}
+                            </div>
+                            <span className="text-sm text-gray-700">{level.name}</span>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenu(openMenu === 'priority' ? null : 'priority');
+                    }}
+                    className="flex items-center hover:bg-gray-50 p-1 rounded-lg"
+                  >
+                    {currentPriority.symbols}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {openMenu === 'priority' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10 min-w-[160px]"
+                      >
+                        {priorityLevels.map((level) => (
+                          <button
+                            key={level.name}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePriorityChange(level.name);
+                            }}
+                            className="flex items-center gap-3 w-full px-3 py-2 hover:bg-gray-50"
+                          >
+                            <div className="flex gap-0.5 min-w-[60px] items-center">
+                              {level.symbols}
+                            </div>
+                            <span className="text-sm text-gray-700">{level.name}</span>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-            );
-          })}
-          
-          <button 
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowLabelInput(true);
-            }}
-            className="px-3 py-1 rounded-full text-sm text-gray-700 hover:bg-gray-100"
-          >
-            + Edit labels
-          </button>
-        </div>
+            </div>
 
-        <AnimatePresence>
-          {showLabelInput && (
-            <LabelMenu 
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] resize-none"
+              placeholder="Add description..."
+            />
+            
+            <div className="flex flex-wrap gap-2">
+              {selectedLabels.map(labelId => {
+                const label = availableLabels.find(l => l.id === labelId);
+                if (!label) return null;
+                return (
+                  <span key={label.id} 
+                    className={`px-3 py-1 rounded-full text-sm ${label.color} break-words`}>
+                    {label.name}
+                  </span>
+                );
+              })}
+              
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowLabelInput(true);
+                }}
+                className="px-3 py-1 rounded-full text-sm text-gray-600 hover:bg-gray-50"
+              >
+                + Edit labels
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-start gap-2">
+              <h3 className="text-base font-medium text-gray-900 min-w-0 flex-1 break-words">{title}</h3>
+              <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                {currentEffort.symbols}
+                {currentPriority.symbols}
+              </div>
+            </div>
+            
+            {description && (
+              <p className="text-sm text-gray-600 break-words overflow-hidden">
+                {getTruncatedDescription(description)}
+              </p>
+            )}
+            
+            <div className="flex flex-wrap gap-2">
+              {selectedLabels.map(labelId => {
+                const label = availableLabels.find(l => l.id === labelId);
+                if (!label) return null;
+                return (
+                  <span key={label.id} 
+                    className={`px-3 py-1 rounded-full text-sm ${label.color} break-words`}>
+                    {label.name}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {showLabelInput && (
+          <div className="absolute left-full top-0 ml-2">
+            <LabelMenu
               isOpen={showLabelInput}
               onClose={() => setShowLabelInput(false)}
               selectedLabels={selectedLabels}
@@ -402,133 +595,9 @@ const Card = () => {
               onDeleteLabel={handleDeleteLabel}
               onColorChange={handleColorChange}
             />
-          )}
-        </AnimatePresence>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold">{title}</h3>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenMenu(openMenu === 'effort' ? null : 'effort');
-              }}
-              className="flex items-center space-x-0.5"
-            >
-              {effortLevels.find(level => level.name === effort)?.symbols}
-            </button>
-            <AnimatePresence>
-              {openMenu === 'effort' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10"
-                >
-                  {effortLevels.map((level) => (
-                    <button
-                      key={level.name}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMenuChange('effort', level.name);
-                      }}
-                      className="flex items-center gap-2 w-full px-4 py-2 hover:bg-gray-50"
-                    >
-                      <div className="flex gap-0.5">
-                        {level.symbols}
-                      </div>
-                      <span className="text-sm">{level.name}</span>
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
-
-          <div className="relative">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenMenu(openMenu === 'priority' ? null : 'priority');
-              }}
-            >
-              {priorityLevels.find(level => level.name === priority)?.symbols}
-            </button>
-            <AnimatePresence>
-              {openMenu === 'priority' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="absolute right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10 min-w-[120px]"
-                >
-                  {priorityLevels.map((level) => (
-                    <button
-                      key={level.name}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleMenuChange('priority', level.name);
-                      }}
-                      className="flex items-center gap-3 w-full px-3 py-2 hover:bg-gray-50"
-                    >
-                      <div className="flex gap-0.5 min-w-[60px] items-center">
-                        {level.symbols}
-                      </div>
-                      <span className="text-sm text-gray-700">{level.name}</span>
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4">
-        {isEditing ? (
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded border border-neutral-300 px-3 py-2 text-sm min-h-[80px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter description..."
-            rows={3}
-            onClick={(e) => e.stopPropagation()}
-          />
-        ) : (
-          description && (
-            <p className="text-sm text-neutral-600 break-words">
-              {description}
-            </p>
-          )
         )}
-      </div>
-
-      {isEditing && (
-        <div className="flex justify-end gap-2 mt-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(false);
-            }}
-            className="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(false);
-            }}
-            className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded"
-          >
-            Save
-          </button>
-        </div>
-      )}
+      </AnimatePresence>
     </motion.div>
   );
-};
-
-export default Card;
+}

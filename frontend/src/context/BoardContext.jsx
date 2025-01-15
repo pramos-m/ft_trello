@@ -2,12 +2,84 @@ import { createContext, useContext, useState } from 'react';
 
 const BoardContext = createContext();
 
+const defaultLabels = [
+  { id: 'label-1', name: 'Blog', color: 'green' },
+  { id: 'label-2', name: 'Frontend', color: 'pink' },
+  { id: 'label-3', name: 'Backend', color: 'yellow' }
+];
+
 export function BoardProvider({ children }) {
   const [columns, setColumns] = useState({});
+  const [labels, setLabels] = useState(defaultLabels);
   const [filters, setFilters] = useState({
     effort: 'None',
     priority: 'None'
   });
+
+  const addLabel = (name, color) => {
+    const newLabel = {
+      id: `label-${Date.now()}`,
+      name,
+      color
+    };
+    setLabels(prev => [...prev, newLabel]);
+    return newLabel;
+  };
+
+  const updateLabel = (labelId, updates) => {
+    setLabels(prev => prev.map(label => 
+      label.id === labelId ? { ...label, ...updates } : label
+    ));
+  };
+
+  const deleteLabel = (labelId) => {
+    setLabels(prev => prev.filter(label => label.id !== labelId));
+    // Remove the label from all cards
+    setColumns(prev => {
+      const newColumns = { ...prev };
+      Object.keys(newColumns).forEach(columnId => {
+        newColumns[columnId].cards = newColumns[columnId].cards.map(card => ({
+          ...card,
+          labels: card.labels?.filter(id => id !== labelId) || []
+        }));
+      });
+      return newColumns;
+    });
+  };
+
+  const addCardLabel = (columnId, cardId, labelId) => {
+    setColumns(prev => {
+      const newColumns = { ...prev };
+      const cardIndex = newColumns[columnId].cards.findIndex(card => card.id === cardId);
+      if (cardIndex !== -1) {
+        const card = newColumns[columnId].cards[cardIndex];
+        const currentLabels = card.labels || [];
+        if (!currentLabels.includes(labelId)) {
+          newColumns[columnId].cards[cardIndex] = {
+            ...card,
+            labels: [...currentLabels, labelId]
+          };
+        }
+      }
+      return newColumns;
+    });
+  };
+
+  const removeCardLabel = (columnId, cardId, labelId) => {
+    setColumns(prev => {
+      const newColumns = { ...prev };
+      const cardIndex = newColumns[columnId].cards.findIndex(card => card.id === cardId);
+      if (cardIndex !== -1) {
+        const card = newColumns[columnId].cards[cardIndex];
+        newColumns[columnId].cards[cardIndex] = {
+          ...card,
+          labels: (card.labels || []).filter(id => id !== labelId)
+        };
+      }
+      return newColumns;
+    });
+  };
+
 
   const addCard = (columnId, card) => {
     setColumns((prev) => ({
@@ -144,6 +216,12 @@ export function BoardProvider({ children }) {
       value={{
         columns,
         filters,
+        labels,
+        addLabel,
+        updateLabel,
+        deleteLabel,
+        addCardLabel,
+        removeCardLabel,
         addCard,
         updateCard,
         deleteCard,

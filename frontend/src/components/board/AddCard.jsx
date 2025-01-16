@@ -6,7 +6,6 @@ export default function AddCard({ columnId }) {
   const { addCard } = useBoard();
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,12 +14,10 @@ export default function AddCard({ columnId }) {
     addCard(columnId, {
       id: `card-${Date.now()}`,
       title: title.trim(),
-      description: description.trim(),
       createdAt: new Date().toISOString()
     });
 
     setTitle('');
-    setDescription('');
     setIsAdding(false);
   };
 
@@ -35,13 +32,6 @@ export default function AddCard({ columnId }) {
             className="w-full rounded border border-neutral-grey-200 px-2 py-1 text-sm"
             placeholder="Enter card title..."
             autoFocus
-          />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded border border-neutral-grey-200 px-2 py-1 text-sm"
-            placeholder="Enter card description..."
-            rows={3}
           />
           <div className="flex justify-end gap-2">
             <button
@@ -66,7 +56,7 @@ export default function AddCard({ columnId }) {
   return (
     <button
       onClick={() => setIsAdding(true)}
-      className="flex w-full items-center gap-1 rounded-lg border-2 border-white bg-white p-3 text-sm text-black hover:bg-neutral-grey-50 "
+      className="flex w-full items-center gap-1 rounded-lg border-2 border-white bg-white p-3 text-sm text-black hover:bg-neutral-grey-50"
     >
       <Plus size={14} />
       Add a card

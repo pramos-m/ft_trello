@@ -53,6 +53,24 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
     }
   };
 
+    // Nuevo manejador para guardar cambios
+    const handleSaveChanges = () => {
+      setIsEditing(false);
+      if (title !== column.title || description !== column.description) {
+        updateColumn(column.id, { title, description });
+      }
+    };
+  
+    // Nuevo manejador para la tecla Enter
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSaveChanges();
+      }
+    };
+  
+  
+
   // Drag-and-drop handlers
   const handleDragStart = (e) => {
     e.dataTransfer.setData('columnIndex', index.toString());
@@ -234,27 +252,25 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      onMouseOver={handleMouseOver}
-      onMouseLeave={handleMouseLeave}
       className={`relative w-72 shrink-0 ${isDraggingToTrash ? 'opacity-50' : ''}`}
     >
       <div style={getColumnPreviewStyle()} />
-      <div className="bg-neutral-100 rounded-lg border border-neutral-200 shadow-sm">
-        {/* Column Header */}
+      <div className="bg-[#F1F4FF] rounded-lg">
         <div ref={editRef} className="px-4 py-3" onClick={() => setIsEditing(true)}>
           <div className="flex justify-between items-center mb-2">
             {isEditing ? (
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-base font-medium bg-white rounded border border-neutral-300 px-2 py-1 focus:outline-none focus:border-blue-500"
+                onKeyDown={handleKeyDown}
+                className="w-full text-base font-medium bg-transparent rounded border border-neutral-300 px-2 py-1 focus:outline-none focus:border-blue-500"
                 autoFocus
                 placeholder="Column title"
               />
             ) : (
               <div className="flex justify-between items-center w-full">
                 <h2 className="text-base font-medium text-neutral-900">{title}</h2>
-                <span className="text-xs bg-neutral-200 px-2 py-0.5 rounded-full text-neutral-700">
+                <span className="bg-[#F1F4FF] rounded-lg">
                   {column.cards.length}
                 </span>
               </div>
@@ -262,32 +278,29 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
           </div>
 
           {/* Description Section */}
-        {(isEditing || column.description) && (
-          <div className="mt-2">
-            {isEditing ? (
-              <div>
-                <textarea
-                  value={description}
-                  onChange={handleDescriptionChange}
-                  className="w-full rounded border border-neutral-300 px-2 py-1 text-sm resize-vertical bg-white focus:outline-none focus:border-blue-500"
-                  rows={2}
-                  placeholder="Add description..."
-                />
-                <div className="text-xs text-right text-neutral-500 mt-1">
-                  {description.length}/{MAX_DESCRIPTION_LENGTH}
+          {(isEditing || column.description) && (
+            <div className="mt-2">
+              {isEditing ? (
+                <div>
+                  <textarea
+                    value={description}
+                    onChange={handleDescriptionChange}
+                    onKeyDown={handleKeyDown}
+                    className="w-full rounded border border-neutral-300 px-2 py-1 text-sm resize-vertical bg-transparent focus:outline-none focus:border-blue-500"
+                    rows={2}
+                    placeholder="Add description..."
+                  />
                 </div>
-              </div>
-            ) : (
-              column.description && (
-                <p className="text-sm text-neutral-600 break-words">
-                  {getTruncatedDescription(column.description)}
-                </p>
-              )
-            )}
-          </div>
-        )}
+              ) : (
+                column.description && (
+                  <p className="text-sm text-neutral-600 break-words">
+                    {getTruncatedDescription(column.description)}
+                  </p>
+                )
+              )}
+            </div>
+          )}
         </div>
-
         {/* Cards Container */}
         <div 
           ref={cardsContainerRef} 

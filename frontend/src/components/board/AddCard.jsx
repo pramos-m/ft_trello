@@ -66,10 +66,10 @@ export default function AddCard({ columnId }) {
   return (
     <button
       onClick={() => setIsAdding(true)}
-      className="flex w-full items-center gap-1 rounded-lg border-2 border-dashed border-neutral-grey-300 p-3 text-sm text-neutral-grey-600 hover:bg-neutral-grey-50"
+      className="flex w-full items-center gap-1 rounded-lg border-2 border-white bg-white p-3 text-sm text-black hover:bg-neutral-grey-50 "
     >
       <Plus size={14} />
       Add a card
     </button>
-  );
+  );  
 }

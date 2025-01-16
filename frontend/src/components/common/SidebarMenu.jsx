@@ -17,6 +17,13 @@ const SidebarMenu = ({ onClose }) => {
   const toggleSubMenu = (submenu) => {
     setOpenSubMenu(openSubMenu === submenu ? null : submenu);
   };
+  
+  const boards = [
+    { id: 1, name: 'Mallorca', color: '#F3F4F6' },  // gray
+    { id: 2, name: 'Mallorca', color: '#FEF3C7' },  // yellow
+    { id: 3, name: 'Mallorca', color: '#FEE2E2' },  // red
+  ];
+
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -111,16 +118,16 @@ const SidebarMenu = ({ onClose }) => {
 
   return (
     <div className="p-6 space-y-6 bg-white h-full relative">
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-6">
-        <button
-          onClick={onClose}
-          className="flex items-center gap-2 text-xl font-medium text-neutral-grey-800 hover:bg-gray-50 rounded px-2 py-1"
-        >
-          <ChevronLeft size={20} />
-          Mallorca
-        </button>
-      </div>
+    {/* Header */}
+    <div className="flex items-center gap-2 mb-6">
+      <button
+        onClick={onClose}
+        className="flex items-center gap-2 text-xl font-medium text-neutral-grey-800 hover:bg-gray-50 rounded px-2 py-1"
+      >
+        <ChevronLeft size={20} />
+        Mallorca
+      </button>
+    </div>
 
       {/* Tasks Section */}
       <div className="flex items-center justify-between p-3 bg-gray-100 rounded-lg">
@@ -132,7 +139,6 @@ const SidebarMenu = ({ onClose }) => {
           {getTotalFilteredCards()}
         </span>
       </div>
-
       {/* Background Section */}
       <div className="relative">
         <button
@@ -336,31 +342,42 @@ const SidebarMenu = ({ onClose }) => {
         </AnimatePresence>
       </div>
 
-      {/* Boards Section */}
-      <div className="space-y-3">
-        <div className="flex items-center px-3">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none" className="mr-2">
-            <path d="M4.625 0.875H2.125C1.79348 0.875 1.47554 1.0067 1.24112 1.24112C1.0067 1.47554 0.875 1.79348 0.875 2.125V4.625M4.625 0.875H10.875C11.2065 0.875 11.5245 1.0067 11.7589 1.24112C11.9933 1.47554 12.125 1.79348 12.125 2.125V4.625M4.625 0.875V12.125M0.875 4.625V10.875C0.875 11.2065 1.0067 11.5245 1.24112 11.7589C1.47554 11.9933 1.79348 12.125 2.125 12.125H4.625M0.875 4.625H12.125M12.125 4.625V10.875C12.125 11.2065 11.9933 11.5245 11.7589 11.7589C11.5245 11.9933 11.2065 12.125 10.875 12.125H4.625" stroke="#1E1E1E" strokeLinecap="round" strokeLinejoin="round"/>
+    {/* Boards Section */}
+    <div>
+      <div className="flex items-center px-4 h-12 bg-gray-50 rounded-lg mb-2">
+        <div className="flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.625 0.875H2.125C1.79348 0.875 1.47554 1.0067 1.24112 1.24112C1.0067 1.47554 0.875 1.79348 0.875 2.125V4.625M4.625 0.875H10.875C11.2065 0.875 11.5245 1.0067 11.7589 1.24112C11.9933 1.47554 12.125 1.79348 12.125 2.125V4.625M4.625 0.875V12.125M0.875 4.625V10.875C0.875 11.2065 1.0067 11.5245 1.24112 11.7589C1.47554 11.9933 1.79348 12.125 2.125 12.125H4.625M0.875 4.625H12.125M12.125 4.625V10.875C12.125 11.2065 11.9933 11.5245 11.7589 11.7589C11.5245 11.9933 11.2065 12.125 10.875 12.125H4.625" 
+              stroke="#1E1E1E" 
+              strokeWidth="1.2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
           </svg>
           <span className="text-sm font-medium text-gray-900">Boards</span>
-          <button className="ml-auto p-1 hover:bg-gray-50 rounded">
-            +
+        </div>
+        <button className="ml-auto w-6 h-6 flex items-center justify-center text-gray-600 hover:bg-gray-200 rounded-full">
+          <span className="text-lg">+</span>
+        </button>
+      </div>
+      
+      <div className="space-y-1">
+        {boards.map((board) => (
+          <button
+            key={board.id}
+            className="w-full flex items-center gap-2 px-4 h-12 rounded-lg hover:bg-gray-50"
+          >
+            <div 
+              className="w-4 h-4 rounded" 
+              style={{ backgroundColor: board.color }} 
+            />
+            <span className="text-sm text-gray-900">{board.name}</span>
           </button>
-        </div>
-        <div className="space-y-1">
-          <div className="p-3 bg-gray-100 rounded-lg text-sm text-gray-900 cursor-pointer">
-            Mallorca
-          </div>
-          <div className="p-3 bg-yellow-50 rounded-lg text-sm text-gray-900 cursor-pointer">
-            Mallorca
-          </div>
-          <div className="p-3 bg-red-50 rounded-lg text-sm text-gray-900 cursor-pointer">
-            Mallorca
-          </div>
-        </div>
+        ))}
       </div>
     </div>
-  );
-};
+        </div>
+      );
+    };
 
 export default SidebarMenu;

@@ -88,23 +88,37 @@ const LabelMenu = ({ isOpen, onClose, selectedLabels, onLabelSelect, availableLa
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        menuRef.current && 
-        !menuRef.current.contains(event.target) 
-      ) {
-        onClose();
-      } else if (
-        subMenuRef.current &&
-        !subMenuRef.current.contains(event.target) &&
-        menuRef.current.contains(event.target) 
-      ) {
-        setActiveLabel(null); 
+      event.stopPropagation(); // Prevenir que el click se propague a otros handlers
+      
+      // Verificar si el click fue dentro del submenú
+      const clickedInSubmenu = subMenuRef.current?.contains(event.target);
+      // Verificar si el click fue dentro del menú principal
+      const clickedInMainMenu = menuRef.current?.contains(event.target);
+      
+      // Si hay un submenú activo
+      if (activeLabel) {
+        // Si el click fue fuera del submenú pero dentro del menú principal
+        if (!clickedInSubmenu && clickedInMainMenu) {
+          setActiveLabel(null);
+          return;
+        }
+        // Si el click fue completamente fuera de ambos menús
+        if (!clickedInSubmenu && !clickedInMainMenu) {
+          setActiveLabel(null);
+          return;
+        }
+      } else {
+        // Si no hay submenú activo y el click es fuera del menú principal
+        if (!clickedInMainMenu) {
+          onClose();
+        }
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
+  }, [onClose, activeLabel]);
+
 
   useEffect(() => {
     if (activeLabel) {
@@ -399,17 +413,51 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenMenu(null);
+      // Si hay algún menú de labels abierto, dejamos que su propio handler lo maneje
+      if (showLabelInput && (
+        menuRef.current?.contains(event.target) ||
+        event.target.closest('[data-label-menu="true"]')
+      )) {
+        return;
       }
-      if (cardRef.current && !cardRef.current.contains(event.target)) {
-        handleSaveCard();
+
+      // Si el click es dentro de la card pero fuera de los menús
+      if (cardRef.current?.contains(event.target)) {
+        if (openMenu) {
+          setOpenMenu(null);
+        }
+        return;
+      }
+
+      // Si el click es completamente fuera de la card
+      if (!cardRef.current?.contains(event.target)) {
+        // Primero cerramos los menús si están abiertos
+        if (openMenu) {
+          setOpenMenu(null);
+        }
+        if (showLabelInput) {
+          setShowLabelInput(false);
+        }
+        // Si no hay menús abiertos, guardamos y cerramos la card
+        else if (isEditing) {
+          handleSaveCard();
+        }
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [title, description]);
+  }, [showLabelInput, openMenu, isEditing, title, description]);
 
+  const handleCardClick = (e) => {
+    // Si el click es en la card pero no en ningún menú
+    if (!e.target.closest('[data-label-menu="true"]')) {
+      if (!openMenu && !showLabelInput) {
+        setIsEditing(true);
+      }
+    }
+  };
+  
   const getTruncatedDescription = (text) => {
     if (!text || text.length <= MAX_VISIBLE_CHARS) return text;
     return text.substring(0, MAX_VISIBLE_CHARS) + '...';
@@ -426,7 +474,7 @@ export default function Card({ card, columnId, index, setDraggingCard }) {
       onDragEnd={handleDragEnd}
       className={`relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 
         ${isDragging ? 'opacity-50' : 'opacity-100'}`}
-      onClick={() => !openMenu && setIsEditing(true)}
+      onClick={handleCardClick}
     >
       <div className="p-4">
         {isEditing ? (

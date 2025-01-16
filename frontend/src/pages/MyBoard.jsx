@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // import useBoard from '../hooks/useBoard.js';
-import useBoard from '../hooks/MyUseBoard.js';
+import useBoard from '../hooks/useBoard.js';
 import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
 import { Trash2, Star } from 'lucide-react';
@@ -11,37 +11,37 @@ import DropdownMenu from '../components/common/DropDownMenu';
 import SidebarMenu from '../components/common/SidebarMenu';
 
 function	Trash() {
-  const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
+	const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
 	const	iconSize = 24;
 
-  const handleTrashDragOver = (e) => {
-    e.preventDefault();
-    setIsDraggingOverTrash(true);
+	const handleTrashDragOver = (e) => {
+		e.preventDefault();
+		setIsDraggingOverTrash(true);
 		return ;
-  };
+	};
 
-  const handleTrashDragLeave = () => {
-    setIsDraggingOverTrash(false);
+	const handleTrashDragLeave = () => {
+		setIsDraggingOverTrash(false);
 		return ;
-  };
+	};
 
-  const handleTrashDrop = (e) => {
-    e.preventDefault();
-    // const columnId = e.dataTransfer.getData('columnId');
-    // if (columnId && columns[columnId]) {
-    //   deleteColumn(columnId);
-    // } else if (draggingCard) {
-    //   const columnId = Object.keys(columns).find((colId) =>
-    //     columns[colId].cards.some((card) => card.id === draggingCard.id)
-    //   );
-    //   if (columnId) {
-    //     deleteCard(columnId, draggingCard.id);
-    //   }
-    // }
-    setIsDraggingOverTrash(false);
-    // setDraggingCard(null);
+	const handleTrashDrop = (e) => {
+		e.preventDefault();
+		// const columnId = e.dataTransfer.getData('columnId');
+		// if (columnId && columns[columnId]) {
+		//	 deleteColumn(columnId);
+		// } else if (draggingCard) {
+		//	 const columnId = Object.keys(columns).find((colId) =>
+		//		 columns[colId].cards.some((card) => card.id === draggingCard.id)
+		//	 );
+		//	 if (columnId) {
+		//		 deleteCard(columnId, draggingCard.id);
+		//	 }
+		// }
+		setIsDraggingOverTrash(false);
+		// setDraggingCard(null);
 		return ;
-  };
+	};
 
 	return (
 		<div
@@ -97,7 +97,7 @@ function	BoardSidebar({title}) {
 				<img src="/icons/arrowRight.svg" className={`transition-transform ${showSidebar ? 'rotate-180' : ''}`}/>
 			</button>
 
-      {/* Overlay cuando el sidebar está abierto */}
+			{/* Overlay cuando el sidebar está abierto */}
 			<AnimatePresence>
 				{showSidebar && 
 					<>
@@ -143,23 +143,22 @@ function	BoardBody() {
 }
 
 function	Board() {
-	const	[ board, refreshBoard, removeBoard, error ] = useBoard();
+	const	{ board, error } = useBoard();
+
+	if (error)
+		return (
+			<h1 className="text-xl text-red-500 font-semibold">
+				There was some error trying to connect to server
+			</h1>
+		);
 
 	return (
 		<div
 			className="w-screen h-screen"
-			style={{backgroundColor: board.color}}>
-			{
-				error ?
-					<h1 className="text-xl text-red-500 font-semibold">
-						There was some error trying to get board info
-					</h1>
-				:
-					<>
-						<BoardHeader title={board.name}/>
-						<BoardBody />
-					</>
-			}
+			style={{backgroundColor: board.color}}
+		>
+			<BoardHeader title={board.name}/>
+			<BoardBody />
 		</div>
 	);
 }
@@ -167,79 +166,79 @@ function	Board() {
 function	BoardPrev() {
 	const { id } = useParams();
 
-  const { columns, deleteCard, deleteColumn } = useBoard();
-  const [draggingCard, setDraggingCard] = useState(null);
-  const [isDraggingColumn, setIsDraggingColumn] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
+	const { columns, deleteCard, deleteColumn } = useBoard();
+	const [draggingCard, setDraggingCard] = useState(null);
+	const [isDraggingColumn, setIsDraggingColumn] = useState(false);
+	const [showSidebar, setShowSidebar] = useState(false);
 
 
-  // Abre/cierra el sidebar
-  const toggleSidebar = () => setShowSidebar(prev => !prev);
+	// Abre/cierra el sidebar
+	const toggleSidebar = () => setShowSidebar(prev => !prev);
 
-  return (
-    <div className="min-h-screen bg-neutral-grey-50 flex">
-      {/* Overlay cuando el sidebar está abierto */}
-      <AnimatePresence>
-        {showSidebar && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={toggleSidebar}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10"
-          />
-        )}
-      </AnimatePresence>
+	return (
+		<div className="min-h-screen bg-neutral-grey-50 flex">
+			{/* Overlay cuando el sidebar está abierto */}
+			<AnimatePresence>
+				{showSidebar && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						onClick={toggleSidebar}
+						className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10"
+					/>
+				)}
+			</AnimatePresence>
 
-      {/* Sidebar */}
-      <AnimatePresence>
-        {showSidebar && (
-          <motion.div
-            initial={{ x: -320 }}
-            animate={{ x: 0 }}
-            exit={{ x: -320 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 w-80 h-full bg-white shadow-xl z-20"
-          >
-            <SidebarMenu onClose={toggleSidebar} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+			{/* Sidebar */}
+			<AnimatePresence>
+				{showSidebar && (
+					<motion.div
+						initial={{ x: -320 }}
+						animate={{ x: 0 }}
+						exit={{ x: -320 }}
+						transition={{ type: "spring", stiffness: 300, damping: 30 }}
+						className="fixed top-0 left-0 w-80 h-full bg-white shadow-xl z-20"
+					>
+						<SidebarMenu onClose={toggleSidebar} />
+					</motion.div>
+				)}
+			</AnimatePresence>
 
-      <div className="flex-1">
-        {/* Header */}
+			<div className="flex-1">
+				{/* Header */}
 
-        {/* Contenido principal */}
-        <div className={`p-6 transition-all duration-300 ${showSidebar ? 'blur-sm' : ''}`}>
-          <div className="flex items-start gap-4 overflow-x-auto pb-4">
-            <motion.div className="flex gap-4">
-              {/* Añadir columnas o mostrar las existentes */}
-              {Object.values(columns).length === 0 ? (
-                <AddColumn />
-              ) : (
-                <>
-                  {Object.values(columns).map((column, index) => (
-                    <Column
-                      key={column.id}
-                      column={column}
-                      draggingCard={draggingCard}
-                      setDraggingCard={setDraggingCard}
-                      index={index}
-                      isDraggingColumn={isDraggingColumn}
-                      setIsDraggingColumn={setIsDraggingColumn}
-                    />
-                  ))}
-                  <AddColumn />
-                </>
-              )}
-            </motion.div>
-          </div>
-        </div>
+				{/* Contenido principal */}
+				<div className={`p-6 transition-all duration-300 ${showSidebar ? 'blur-sm' : ''}`}>
+					<div className="flex items-start gap-4 overflow-x-auto pb-4">
+						<motion.div className="flex gap-4">
+							{/* Añadir columnas o mostrar las existentes */}
+							{Object.values(columns).length === 0 ? (
+								<AddColumn />
+							) : (
+								<>
+									{Object.values(columns).map((column, index) => (
+										<Column
+											key={column.id}
+											column={column}
+											draggingCard={draggingCard}
+											setDraggingCard={setDraggingCard}
+											index={index}
+											isDraggingColumn={isDraggingColumn}
+											setIsDraggingColumn={setIsDraggingColumn}
+										/>
+									))}
+									<AddColumn />
+								</>
+							)}
+						</motion.div>
+					</div>
+				</div>
 
-        {/* Papelera flotante */}
-      </div>
-    </div>
-  );
+				{/* Papelera flotante */}
+			</div>
+		</div>
+	);
 }
 
 export default Board;

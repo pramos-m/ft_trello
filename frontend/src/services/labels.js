@@ -15,14 +15,14 @@ export function	createLabel({data}) {
 	}));
 }
 
-export function	updateLabel({data, id}) {
+export function	updateLabel({id, data}) {
 	return (fetcher.patchJson({
 		url: `${baseUrl}/${id}`,
 		data
 	}));
 }
 
-export function	replaceLabel({data, id}) {
+export function	replaceLabel({id, data}) {
 	return (fetcher.putJson({
 		url: `${baseUrl}/${id}`,
 		data

@@ -15,14 +15,14 @@ export function	createCard({data}) {
 	}));
 }
 
-export function	updateCard({data, id}) {
+export function	updateCard({id, data}) {
 	return (fetcher.patchJson({
 		url: `${baseUrl}/${id}`,
 		data
 	}));
 }
 
-export function	replaceCard({data, id}) {
+export function	replaceCard({id, data}) {
 	return (fetcher.putJson({
 		url: `${baseUrl}/${id}`,
 		data

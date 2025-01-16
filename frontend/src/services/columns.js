@@ -15,14 +15,14 @@ export function	createColumn({data}) {
 	}));
 }
 
-export function updateColumn({data, id}) {
+export function updateColumn({id, data}) {
 	return (fetcher.patchJson({
 		url: `${baseUrl}/${id}`,
 		data
 	}));
 }
 
-export function	replaceColumn({data, id}) {
+export function	replaceColumn({id, data}) {
 	return (fetcher.putJson({
 		url: `${baseUrl}/${id}`,
 		data

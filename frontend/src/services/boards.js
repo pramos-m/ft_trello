@@ -26,3 +26,10 @@ export function	deleteBoard({id}) {
 		url: `${baseUrl}/${id}`,
 	}));
 }
+
+export function	updateBoard({id, data}) {
+	return (fetcher.patchJson({
+		url: `${baseUrl}/${id}`,
+		data
+	}));
+}

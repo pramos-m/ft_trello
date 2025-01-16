@@ -6,7 +6,7 @@ const	fetcher = {
 				.then(res => {
 					if (!res.ok)
 					{
-						console.log(res);
+						console.log(res.statusText);
 						throw new Error("Failed to fetch json data - [GET]");
 					}
 					return (res.json());
@@ -26,7 +26,7 @@ const	fetcher = {
 			.then(res => {
 				if (!res.ok)
 				{
-					console.log(res);
+					console.log(res.statusText);
 					throw new Error("Failed to fetch json data - [POST]");
 				}
 				return (res.json());
@@ -46,7 +46,7 @@ const	fetcher = {
 			.then(res => {
 				if (!res.ok)
 				{
-					console.log(res);
+					console.log(res.statusText);
 					throw new Error("Failed to fetch json data - [PUT]");
 				}
 				return (res.json());
@@ -66,7 +66,7 @@ const	fetcher = {
 			.then(res => {
 				if (!res.ok)
 				{
-					console.log(res);
+					console.log(res.statusText);
 					throw new Error("Failed to fetch json data - [PATCH]");
 				}
 				return (res.json());
@@ -80,7 +80,7 @@ const	fetcher = {
 				.then(res => {
 					if (!res.ok)
 					{
-						console.log(res);
+						console.log(res.statusText);
 						throw new Error("Failed to fetch json data - [DELETE]");
 					}
 					return (res.json());

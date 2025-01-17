@@ -219,6 +219,7 @@ function BoardProvider({ children }) {
   return (
     <BoardContext.Provider
       value={{
+				error,
 				board,
 				refreshBoard,
 				deleteBoard: removeBoard,

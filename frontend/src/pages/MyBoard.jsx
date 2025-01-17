@@ -164,49 +164,13 @@ function	Board() {
 }
 
 function	BoardPrev() {
-	const { id } = useParams();
-
-	const { columns, deleteCard, deleteColumn } = useBoard();
 	const [draggingCard, setDraggingCard] = useState(null);
 	const [isDraggingColumn, setIsDraggingColumn] = useState(false);
-	const [showSidebar, setShowSidebar] = useState(false);
-
-
-	// Abre/cierra el sidebar
-	const toggleSidebar = () => setShowSidebar(prev => !prev);
 
 	return (
 		<div className="min-h-screen bg-neutral-grey-50 flex">
-			{/* Overlay cuando el sidebar está abierto */}
-			<AnimatePresence>
-				{showSidebar && (
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						onClick={toggleSidebar}
-						className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10"
-					/>
-				)}
-			</AnimatePresence>
-
-			{/* Sidebar */}
-			<AnimatePresence>
-				{showSidebar && (
-					<motion.div
-						initial={{ x: -320 }}
-						animate={{ x: 0 }}
-						exit={{ x: -320 }}
-						transition={{ type: "spring", stiffness: 300, damping: 30 }}
-						className="fixed top-0 left-0 w-80 h-full bg-white shadow-xl z-20"
-					>
-						<SidebarMenu onClose={toggleSidebar} />
-					</motion.div>
-				)}
-			</AnimatePresence>
 
 			<div className="flex-1">
-				{/* Header */}
 
 				{/* Contenido principal */}
 				<div className={`p-6 transition-all duration-300 ${showSidebar ? 'blur-sm' : ''}`}>

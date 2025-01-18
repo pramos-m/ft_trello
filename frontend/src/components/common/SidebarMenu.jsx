@@ -1,13 +1,32 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ChevronDown, ChevronLeft, Paperclip, Filter, Clock, Palette } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBoard } from '../../context/BoardContext';
+
+
+const colors = [
+  { name: 'Rojo', color: '#E74C3C' },
+  { name: 'Naranja', color: '#F39C12' },
+  { name: 'Verde', color: '#27AE60' },
+  { name: 'Cian', color: '#3498DB' },
+  { name: 'Azul', color: '#2563EB' },
+  { name: 'Violeta', color: '#6B46C1' },
+  { name: 'Negro', color: '#1E293B' }
+];
+
+const getRandomColor = () => {
+  return colors[Math.floor(Math.random() * colors.length)].color;
+};
+
 
 const SidebarMenu = ({ onClose }) => {
   const [openMenu, setOpenMenu] = useState(null);
   const [openSubMenu, setOpenSubMenu] = useState(null);
   const { filters, updateFilters, getTotalFilteredCards } = useBoard();
   const [selectedColor, setSelectedColor] = useState('violeta');
+  const [isAddingBoard, setIsAddingBoard] = useState(false);
+  const [newBoardTitle, setNewBoardTitle] = useState('');
+  const newBoardColor = useRef(getRandomColor());
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
@@ -18,12 +37,33 @@ const SidebarMenu = ({ onClose }) => {
     setOpenSubMenu(openSubMenu === submenu ? null : submenu);
   };
   
-  const boards = [
-    { id: 1, name: 'Mallorca', color: '#F3F4F6' },  // gray
-    { id: 2, name: 'Mallorca', color: '#FEF3C7' },  // yellow
-    { id: 3, name: 'Mallorca', color: '#FEE2E2' },  // red
-  ];
+  const [boards, setBoards] = useState([
+    { id: 1, name: 'Mallorca', color: '#F3F4F6' },
+    { id: 2, name: 'Mallorca', color: '#FEF3C7' },
+    { id: 3, name: 'Mallorca', color: '#FEE2E2' },
+  ]);
 
+  const handleAddBoard = (e) => {
+    e.preventDefault();
+    if (newBoardTitle.trim()) {
+      setBoards([
+        ...boards,
+        {
+          id: boards.length + 1,
+          name: newBoardTitle,
+          color: newBoardColor.current,
+        },
+      ]);
+      setNewBoardTitle('');
+      setIsAddingBoard(false);
+      newBoardColor.current = getRandomColor();
+    }
+  };
+
+  const startAddingBoard = () => {
+    setIsAddingBoard(true);
+    newBoardColor.current = getRandomColor();
+  };
 
   const getActiveFiltersCount = () => {
     let count = 0;
@@ -31,16 +71,6 @@ const SidebarMenu = ({ onClose }) => {
     if (filters.priority !== 'None') count++;
     return count;
   };
-
-  const colors = [
-    { name: 'Rojo', color: '#E74C3C' },
-    { name: 'Naranja', color: '#F39C12' },
-    { name: 'Verde', color: '#27AE60' },
-    { name: 'Cian', color: '#3498DB' },
-    { name: 'Azul', color: '#2563EB' },
-    { name: 'Violeta', color: '#6B46C1' },
-    { name: 'Negro', color: '#1E293B' }
-  ];
 
   const effortLevels = [
     { name: 'None', symbols: [] },
@@ -342,42 +372,73 @@ const SidebarMenu = ({ onClose }) => {
         </AnimatePresence>
       </div>
 
-    {/* Boards Section */}
-    <div>
-      <div className="flex items-center px-4 h-12 bg-gray-50 rounded-lg mb-2">
-        <div className="flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4.625 0.875H2.125C1.79348 0.875 1.47554 1.0067 1.24112 1.24112C1.0067 1.47554 0.875 1.79348 0.875 2.125V4.625M4.625 0.875H10.875C11.2065 0.875 11.5245 1.0067 11.7589 1.24112C11.9933 1.47554 12.125 1.79348 12.125 2.125V4.625M4.625 0.875V12.125M0.875 4.625V10.875C0.875 11.2065 1.0067 11.5245 1.24112 11.7589C1.47554 11.9933 1.79348 12.125 2.125 12.125H4.625M0.875 4.625H12.125M12.125 4.625V10.875C12.125 11.2065 11.9933 11.5245 11.7589 11.7589C11.5245 11.9933 11.2065 12.125 10.875 12.125H4.625" 
-              stroke="#1E1E1E" 
-              strokeWidth="1.2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span className="text-sm font-medium text-gray-900">Boards</span>
-        </div>
-        <button className="ml-auto w-6 h-6 flex items-center justify-center text-gray-600 hover:bg-gray-200 rounded-full">
-          <span className="text-lg">+</span>
-        </button>
-      </div>
-      
-      <div className="space-y-1">
-        {boards.map((board) => (
-          <button
-            key={board.id}
-            className="w-full flex items-center gap-2 px-4 h-12 rounded-lg hover:bg-gray-50"
+      {/* Boards Section */}
+      <div>
+        <div className="flex items-center px-4 h-12 bg-gray-50 rounded-lg mb-2">
+          <div className="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4.625 0.875H2.125C1.79348 0.875 1.47554 1.0067 1.24112 1.24112C1.0067 1.47554 0.875 1.79348 0.875 2.125V4.625M4.625 0.875H10.875C11.2065 0.875 11.5245 1.0067 11.7589 1.24112C11.9933 1.47554 12.125 1.79348 12.125 2.125V4.625M4.625 0.875V12.125M0.875 4.625V10.875C0.875 11.2065 1.0067 11.5245 1.24112 11.7589C1.47554 11.9933 1.79348 12.125 2.125 12.125H4.625M0.875 4.625H12.125M12.125 4.625V10.875C12.125 11.2065 11.9933 11.5245 11.7589 11.7589C11.5245 11.9933 11.2065 12.125 10.875 12.125H4.625" 
+                stroke="#1E1E1E" 
+                strokeWidth="1.2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="text-sm font-medium text-gray-900">Boards</span>
+          </div>
+          <button 
+            onClick={() => isAddingBoard ? setIsAddingBoard(false) : startAddingBoard()}
+            className="ml-auto w-6 h-6 flex items-center justify-center text-gray-600 hover:bg-gray-200 rounded-full transition-transform duration-200"
           >
-            <div 
-              className="w-4 h-4 rounded" 
-              style={{ backgroundColor: board.color }} 
-            />
-            <span className="text-sm text-gray-900">{board.name}</span>
+            <span className={`text-lg transform transition-transform duration-200 ${isAddingBoard ? 'rotate-45' : ''}`}>
+              +
+            </span>
           </button>
-        ))}
+        </div>
+        
+        <div className="space-y-1">
+          {boards.map((board) => (
+            <button
+              key={board.id}
+              className="w-full flex items-center gap-2 px-4 h-12 rounded-lg hover:bg-gray-50"
+            >
+              <div 
+                className="w-4 h-4 rounded" 
+                style={{ backgroundColor: board.color }} 
+              />
+              <span className="text-sm text-gray-900">{board.name}</span>
+            </button>
+          ))}
+          
+          <AnimatePresence>
+            {isAddingBoard && (
+              <motion.form
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onSubmit={handleAddBoard}
+                className="flex items-center gap-2 px-4 h-12"
+              >
+                <div 
+                  className="w-4 h-4 rounded" 
+                  style={{ backgroundColor: newBoardColor.current }} 
+                />
+                <input
+                  type="text"
+                  value={newBoardTitle}
+                  onChange={(e) => setNewBoardTitle(e.target.value)}
+                  placeholder="Enter board title"
+                  className="flex-1 text-sm text-gray-900 bg-transparent border-b border-gray-300 focus:border-gray-600 outline-none"
+                  autoFocus
+                />
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
-        </div>
-      );
-    };
+  );
+};
 
 export default SidebarMenu;

@@ -1,20 +1,23 @@
-import { useNavigate } from "react-router";
+import { Navigate } from "react-router";
+import { useEffect, useState } from "react";
 
 import { getSession } from "../services/auth.js";
 
 function	ProtectedRoute({ children }) {
-	const navigate = useNavigate();
+	const	[page, setPage] = useState(undefined);
+	const	login = <Navigate to="/login"/>;
 
-	getSession()
-		.then(user => {
-			if (!user)
-				navigate("/login");
-		})
-		.catch((error) => {
-			navigate("/login");
-		});
+	useEffect(() => {
+		getSession()
+			.then(user => {
+				setPage(user ? children : login);
+			})
+			.catch(() => {
+				setPage(login);
+			});
+	});
 
-	return (children);
+	return (page);
 }
 
 export default ProtectedRoute;

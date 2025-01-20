@@ -1,7 +1,6 @@
-import { useParams } from "react-router";
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
 // import useBoard from '../hooks/useBoard.js';
 import useBoard from '../hooks/useBoard.js';
 import Column from '../components/board/Column';

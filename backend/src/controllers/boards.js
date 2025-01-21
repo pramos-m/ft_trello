@@ -6,136 +6,102 @@ const listCollection = db.collection("lists");
 const taskCollection = db.collection("tasks");
 
 const controller = {
-
-    // Obtener todos los boards del usuario con información básica
-    async getBoardsByUser(userId) {
-      const boards = await collection
-        .find({ userId: new ObjectId(userId) })
-        .project({ name: 1, color: 1, favorite: 1, date: 1 })
-        .toArray();
-  
-      return boards.map((board) => ({
-				id: board._id,
-        name: board.name,
-        color: board.color,
-        favorite: board.favorite,
-        recent: ((new Date() - board.lastView) / (1000 * 60 * 60 * 24)) <= 15,
-				lists: 6,
-				tasks: 30,
-      }));
-    },
-
-  // Obtener detalles de un board por nombre
-  /*async getBoardByName(name) {
-    const board = await collection.findOne({ name });
-
-    if (!board) {
-      throw new Error("Board not found");
-    }
-
-    const lists = await listCollection
-      .find({ boardId: board._id })
-      .project({ name: 1, description: 1 })
+  // Obtener todos los boards con su información básica por usuario
+  async getBoardsByUser(userId) {
+    const boards = await collection
+      .find({ userId: new ObjectId(userId) })
       .toArray();
 
-    const listsWithTasks = await Promise.all(
-      lists.map(async (list) => {
-        const tasks = await taskCollection
-          .find({ listId: list._id })
-          .project({ name: 1, description: 1 })
+    const boardsWithRefs = await Promise.all(
+      boards.map(async (board) => {
+        const lists = await listCollection
+          .find({ boardId: board._id })
+          .project({ _id: 1 })
           .toArray();
-        return { ...list, tasks };
-      })
-    );
-
-    return {
-      _id: board._id,
-      name: board.name,
-      color: board.color,
-      favorite: board.favorite,
-      lists: listsWithTasks,
-    };
-  },*/
-
-  async getBoardById(id) {
-    const board = await collection.findOne({ _id: new ObjectId(id) });
-  
-    if (!board) {
-      throw new Error("Board not found");
-    }
-  
-    const lists = await listCollection
-      .find({ boardId: board._id })
-      .project({ name: 1, description: 1 })
-      .toArray();
-  
-    const listsWithTasks = await Promise.all(
-      lists.map(async (list, listIndex) => {
+        
+        const listsIds = lists.map(list => list._id);
         const tasks = await taskCollection
-          .find({ listId: list._id })
-          .project({ name: 1, description: 1 })
+          .find({ listId: { $in: listsIds } })
+          .project({ _id: 1 })
           .toArray();
-  
-        // Añadir índice a las tareas
-        const tasksWithIndex = tasks.map((task, taskIndex) => ({
-          index: taskIndex,
-          ...task,
-        }));
-  
-        // Retornar lista con índice e incluir tareas con índices
+
+        const taskIds = tasks.map(task => task._id);
+        const labels = await labelCollection
+          .find({ taskId: { $in: taskIds } })
+          .project({ _id: 1 })
+          .toArray();
+
         return {
-          index: listIndex,
-          ...list,
-          tasks: tasksWithIndex,
+          _id: board._id.toString(),
+          name: board.name,
+          backgroundColor: board.color,
+          favorite: board.favorite,
+          recent: ((new Date() - board.lastView) / (1000 * 60 * 60 * 24)) <= 15,
+          lists: lists.map(list => list._id.toString()),
+          tasks: tasks.map(task => task._id.toString()),
+          labels: labels.map(label => label._id.toString())
         };
       })
     );
-  
+
+    return boardsWithRefs;
+  },
+
+  // Obtener toda la información de un board
+  async getBoardById(id) {
+    const board = await collection.findOne({ _id: new ObjectId(id) });
+    if (!board) {
+      throw new Error("Board not found");
+    }
+
+    const lists = await listCollection
+      .find({ boardId: board._id })
+      .toArray();
+
+    const listsIds = lists.map(list => list._id);
+    
+    const tasks = await taskCollection
+      .find({ listId: { $in: listsIds } })
+      .toArray();
+
+    const taskIds = tasks.map(task => task._id);
+
+    const labels = await labelCollection
+      .find({ taskId: { $in: taskIds } })
+      .toArray();
+
+    const formattedLists = lists.map(list => ({
+      id: list._id.toString(),
+      title: list.name,
+      tasks: tasks
+        .filter(task => task.listId.equals(list._id))
+        .map(task => task._id.toString())
+    }));
+
+    const formattedTasks = tasks.map(task => ({
+      id: task._id.toString(),
+      title: task.name,
+      labels: labels
+        .filter(label => label.taskId.equals(task._id))
+        .map(label => label._id.toString())
+    }));
+
+    const formattedLabels = labels.map(label => ({
+      id: label._id.toString(),
+      title: label.name,
+      color: label.color
+    }));
+
     return {
-      _id: board._id,
+      id: board._id.toString(),
+      backgroundColor: board.color,
       name: board.name,
-      color: board.color,
       favorite: board.favorite,
-      lists: listsWithTasks,
+      lists: formattedLists,
+      tasks: formattedTasks,
+      labels: formattedLabels
     };
   },
-  
-
-    // Obtener detalles de todos los boards del usuario con detalles.
-    async getBoardsWithDetails(userId) {
-      const boards = await collection
-        .find({ userId: new ObjectId(userId) })
-        .toArray();
-  
-      const detailedBoards = await Promise.all(
-        boards.map(async (board) => {
-          const lists = await listCollection
-            .find({ boardId: board._id })
-            .project({ name: 1, description: 1 })
-            .toArray();
-  
-          const listsWithTasks = await Promise.all(
-            lists.map(async (list) => {
-              const tasks = await taskCollection
-                .find({ listId: list._id })
-                .project({ name: 1, description: 1 })
-                .toArray();
-              return { ...list, tasks };
-            })
-          );
-  
-          return {
-            _id: board._id,
-            name: board.name,
-            color: board.color,
-            favorite: board.favorite,
-            lists: listsWithTasks,
-          };
-        })
-      );
-  
-      return detailedBoards;
-    },
   
   // Obtener la cantidad de listas asignadas a un board
   async getListCount(boardId) {

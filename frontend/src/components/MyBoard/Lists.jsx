@@ -1,23 +1,24 @@
 import { useCallback } from "react";
 
 import useBoard from "../../hooks/useBoard.js";
-import createList from "../../services/lists.js";
+import { createList } from "../../services/lists.js";
 import List from "./List.jsx";
 import AddList from "./AddList.jsx";
-import useBoard from "../../hooks/useBoard.js";
 
-function	BoardLists({lists}) {
-	const	{ board } = useBoard();
+function	BoardLists({lists = []}) {
+	const	{ board, refreshBoard } = useBoard();
 
 	const	createNewList = useCallback(data => {
-		createList({...data, boardId: board.id});
-	}, [board]);
+		console.log({data: {...data, boardId: board._id}});
+		createList({data: {...data, boardId: board._id}})
+			.then(() => refreshBoard());
+	}, [board, refreshBoard]);
 
 	return (
 		<div className="flex items-start gap-x-8 ml-3">
 			{
-				lists && lists.map(list =>
-					<List key={`list${list.id}`} name={list.name} tasksId={list.tasks}/>
+				lists.length > 0 && lists.map(list =>
+					<List key={`list${list._id}`} id={list._id} name={list.name} description={list.description} tasksId={list.tasks}/>
 				)
 			}
 			<AddList onCreate={createNewList}/>

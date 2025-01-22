@@ -11,6 +11,7 @@ router.post("/", async (req, res) => {
     return res.status(400).send("listId and name are required");
 
   try {
+		console.log("\n\n\nhola1\n\n\n");
     const newTask = await controller.createTask(
       listId,
       name,
@@ -19,8 +20,10 @@ router.post("/", async (req, res) => {
       effort,
       index
     );
+		console.log("\n\n\nhola2\n\n\n");
     res.status(201).json(newTask);
   } catch (err) {
+		console.log(err);
     res.status(500).json({ error: err.message });
   }
 });

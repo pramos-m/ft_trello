@@ -15,6 +15,18 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.patch("/:id", async (req, res) => {
+  // const { name, description } = req.body;
+	// console.log(name, description);
+  // if (!name && !description) return res.status(400).send("Name or description is required");
+  try {
+    const success = await controller.updateList(req.params.id, req.body);
+    res.status(200).send({ success });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 // Cambiar el índice de una lista y ajustar los índices afectados
 router.patch("/:id/index", async (req, res) => {
   const { newIndex } = req.body;

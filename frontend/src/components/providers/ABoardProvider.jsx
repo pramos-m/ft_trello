@@ -3,7 +3,10 @@ import { useParams } from "react-router";
 
 import BoardContext from "../../context/BoardContext.js";
 import useMergeState from "../../hooks/useMergeState.js";
-import getBoard from "../../services/boards.js";
+import { getBoard, updateBoard } from "../../services/boards.js";
+import { updateList } from "../../services/lists.js";
+import { updateTask } from "../../services/tasks.js";
+import { updateLabel } from "../../services/labels.js";
 
 const	formatedUpdater = (array, {itemId, fields}) => updateArrayItemFieldsById(array, itemId, fields);
 
@@ -60,8 +63,6 @@ function	BoardProvider({children})
 		updater()
 			.then(() => localUpdater(id, value));
 	}
-
-	updateBoardField("lists")
 
 	return (
     <BoardContext.Provider

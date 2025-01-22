@@ -5,10 +5,11 @@ const collection = db.collection("lists");
 
 const controller = {
   // Cambiar el nombre y/o la descripción de una lista
-  async updateList(id, data) {
-    const updateData = {};
-    if (data.name) updateData.name = data.name;
-    if (data.description) updateData.description = data.description;
+  async updateList(id, updateData) {
+    // const updateData = {};
+		// console.log(name, description)
+  //   updateData.name = name;
+  //   updateData.description = description;
 
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },

@@ -5,7 +5,7 @@ const collection = db.collection("tasks");
 
 const controller = {
   // Crear una nueva tarea en una lista específica
-  async createTask(listId, name, description, priority = "low", effort = "low") {
+  async createTask(listId, name, description = null, priority = "low", effort = "low") {
     // Obtener el índice más alto actual en la lista y agregar 1
     const maxIndexTask = await collection.find({ listId: new ObjectId(listId) })
       .sort({ index: -1 })
@@ -22,6 +22,9 @@ const controller = {
       effort,
       index: newIndex,
     };
+		console.log("\n\n\n");
+		console.log(newTask);
+		console.log("\n\n\n");
     const result = await collection.insertOne(newTask);
 
     return { ...newTask, _id: result.insertedId };

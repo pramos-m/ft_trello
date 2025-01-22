@@ -16,7 +16,6 @@ function	BoardAddList({onCreate}) {
 	}
 
 	return (
-
 		<div className="w-[70%] shrink-0 grow-0">
 			{
 				enable ?
@@ -36,7 +35,7 @@ function	BoardAddList({onCreate}) {
 				:
 					<button className="flex gap-x-2" onClick={() => setEnable(enable => !enable)}>
 						<img src="/icons/plus.svg" className="w-4"/>
-						<h1 className="font-semibold text-xl">Add a column</h1>
+						<h1 className="font-semibold text-xl">Add a list</h1>
 					</button>
 			}
 		</div>

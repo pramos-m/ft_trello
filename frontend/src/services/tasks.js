@@ -1,6 +1,6 @@
 import fetcher from "./fetcher.js";
 
-const	baseUrl = "/api/cards";
+const	baseUrl = "/api/tasks";
 
 export function	getTask({id}) {
 	return (fetcher.getJson({

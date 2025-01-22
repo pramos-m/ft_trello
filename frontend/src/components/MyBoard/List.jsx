@@ -26,7 +26,7 @@ function	Form({fields, submitTitle}) {
 	const [fieldsValue, mergeFieldsValue] = useState(Object.fromEntries(fields.map(({name, value}) => ([name, value]))));
 
 	const	updateFormValue = e => {
-		mergeDetails({[e.target.name]: e.target.value});
+		mergeFieldsValue({[e.target.name]: e.target.value});
 	};
 
 	const	handleSubmit = e => {
@@ -48,19 +48,6 @@ function	Form({fields, submitTitle}) {
 					</label>
 				)
 			}
-			<label htmlFor="name">
-				<input
-					className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm"
-					id="name" placeholder="To Do, ..." name="name" value={name} onChange={updateFormValue}
-				/>
-			</label>
-			<label htmlFor="description">
-				<input
-					className="p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm"
-					id="description" placeholder="thing to do, ..." name="description" value={description}
-					onChange={updateFormValue}
-				/>
-			</label>
 			<div className="flex justify-between">
 				<button type="submit" className="w-2/5 text-sm rounded bg-neutral-200 p-1">
 					{submitTitle}

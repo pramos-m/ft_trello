@@ -15,7 +15,10 @@ function BoardProvider({ children }) {
 
 	const	refreshBoard = () => {
 		getBoard({id})
-			.then(data => setBoard(data))
+			.then(data => setBoard({...data, ...{
+				// lists: [{id: 0, name: "patata", tasks: [0, 1, 2]}, {id: 1, name: "patatas", tasks: [1]}],
+				// tasks: [{id: 0, name: "patata0"}, {id: 1, name: "patata1"}, {id: 2, name: "patata2"}],
+			}}))
 			.catch(err => setError(err));
 	};
 

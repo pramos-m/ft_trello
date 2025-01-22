@@ -2,34 +2,34 @@ import fetcher from "./fetcher.js";
 
 const	baseUrl = "/api/cards";
 
-export function	getCard({id}) {
+export function	getTask({id}) {
 	return (fetcher.getJson({
 		url: `${baseUrl}/${id}`,
 	}));
 }
 
-export function	createCard({data}) {
+export function	createTask({data}) {
 	return (fetcher.postJson({
 		url: baseUrl,
 		data
 	}));
 }
 
-export function	updateCard({id, data}) {
+export function	updateTask({id, data}) {
 	return (fetcher.patchJson({
 		url: `${baseUrl}/${id}`,
 		data
 	}));
 }
 
-export function	replaceCard({id, data}) {
+export function	replaceTask({id, data}) {
 	return (fetcher.putJson({
 		url: `${baseUrl}/${id}`,
 		data
 	}));
 }
 
-export function	deleteCard({id}) {
+export function	deleteTask({id}) {
 	return (fetcher.deleteJson({
 		url: `${baseUrl}/${id}`,
 	}));

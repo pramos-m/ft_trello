@@ -1,6 +1,5 @@
 import { useState, useEffect, useReducer, useCallback } from "react";
 import { useParams } from "react-router";
-import { useNavigate } from "react-router";
 
 import BoardContext from "../../context/BoardContext.js";
 import useMergeState from "../../hooks/useMergeState.js";
@@ -8,11 +7,18 @@ import getBoard from "../../services/boards.js";
 
 const	formatedUpdater = (array, {itemId, fields}) => updateArrayItemFieldsById(array, itemId, fields);
 
-const	boardFieldUpdaters = {
+const	localBoardFieldUpdaters = {
 	lists: formatedUpdater,
 	tasks: formatedUpdater,
 	labels: formatedUpdater,
 	background: (_, newVal) => newVal,
+};
+
+const	boardFieldUpdaters = {
+	lists: updateList,
+	tasks: updateTask,
+	labels: updateLabel,
+	board: updateBoard,
 };
 
 function	BoardProvider({children})
@@ -38,7 +44,7 @@ function	BoardProvider({children})
 
 	const	updateLocalBoardField = (name, value, updater = null) => {
 		if (!updater)
-			updater = boardFieldUpdaters[name];
+			updater = localBoardFieldUpdaters[name];
 
 		setBoard(board => ({
 			...board,
@@ -46,6 +52,16 @@ function	BoardProvider({children})
 		}));
 		return ;
 	};
+
+	const	updateBoardField = (name, id, value, cb = null) => {
+		const	updater = boardFieldUpdaters[name];
+		const	localUpdater = cb == null ? localBoardFieldUpdaters[name] : cb;
+
+		updater()
+			.then(() => localUpdater(id, value));
+	}
+
+	updateBoardField("lists")
 
 	return (
     <BoardContext.Provider

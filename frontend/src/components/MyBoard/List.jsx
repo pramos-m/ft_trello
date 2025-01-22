@@ -23,9 +23,10 @@ function	FormInput({id, name, placeholder, value, onChange}) {
 }
 
 function	Form({fields, submitTitle, onSubmit, onClose}) {
-	const [fieldsValue, mergeFieldsValue] = useState(Object.fromEntries(fields.map(({name, initialValue}) => ([name, initialValue]))));
+	const [fieldsValue, mergeFieldsValue] = useMergeState(Object.fromEntries(fields.map(({name, initialValue}) => ([name, initialValue]))));
 
 	const	updateFormValue = e => {
+		e.preventDefault();
 		mergeFieldsValue({[e.target.name]: e.target.value});
 	};
 
@@ -40,13 +41,15 @@ function	Form({fields, submitTitle, onSubmit, onClose}) {
 	return (
 		<form className="flex flex-col gap-y-2" onSubmit={handleSubmit}>
 			{
-				fields?.length > 0 && fields.map(({id, placeholder, name}) => 
-					<label key={name} htmlFor={name}>
+				fields?.length > 0 && fields.map(({id, placeholder, name}) => {
+					console.log(name, fieldsValue[name]);
+					return <label key={id} htmlFor={`input${id}`}>
 						<input
-							className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm"
-							id={id} placeholder={placeholder} name={name} value={fieldsValue[name]} onChange={updateFormValue}
+					className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm"
+					id={`input${id}`} placeholder={placeholder} name={name} value={fieldsValue[name]} onChange={updateFormValue}
 						/>
-					</label>
+						</label>
+				}
 				)
 			}
 			<div className="flex justify-between">
@@ -62,54 +65,12 @@ function	Form({fields, submitTitle, onSubmit, onClose}) {
 }
 
 function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
-	const	[{name, description}, mergeDetails] = useMergeState({
-		name: initialName,
-		description: initialDescription
-	});
 	const	fields = [
-		{name: "name", id: name, initialValue: initialName, placeholder: "To Do, ..."},
-		{name: "description", id: name, initialValue: initialDescription, placeholder: "thing to do, ..."},
+		{name: "name", id: "name", initialValue: initialName, placeholder: "To Do, ..."},
+		{name: "description", id: "description", initialValue: initialDescription, placeholder: "thing to do, ..."},
 	];
 
-	const	updateFormValue = e => {
-		mergeDetails({[e.target.name]: e.target.value});
-	};
-
-	const	handleUpdateField = e => {
-		e.preventDefault();
-
-		const	data = Object.fromEntries(new FormData(e.target));
-
-		onSubmit(data);
-	};
-
 	return (<Form fields={fields} submitTitle="Save" onSubmit={onSubmit} onClose={onClose}/>);
-
-	return (
-		<form className="flex flex-col gap-y-2" onSubmit={handleUpdateField}>
-			<label htmlFor="name">
-				<input
-					className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm"
-					id="name" placeholder="To Do, ..." name="name" value={name} onChange={updateFormValue}
-				/>
-			</label>
-			<label htmlFor="description">
-				<input
-					className="p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm"
-					id="description" placeholder="thing to do, ..." name="description" value={description}
-					onChange={updateFormValue}
-				/>
-			</label>
-			<div className="flex justify-between">
-				<button type="submit" className="w-2/5 text-sm rounded bg-neutral-200 p-1">
-					Save
-				</button>
-				<button type="button" onClick={onClose}>
-					<img src="/public/icons/close.svg" className="w-3"/>
-				</button>
-			</div>
-		</form>
-	);
 }
 
 function	ListHeader({id, name, description, tasksAmount, refresh}) {

@@ -12,14 +12,13 @@ export function	NewBoard({refresh}) {
 
 		console.log(data);
 		createBoard({data})
-			.then(() => {
-
-			})
 			.catch(err => {
 				console.log(err)
+			})
+			.finally(() => {
+				setIsPopup(false);
+				refresh();
 			});
-		setIsPopup(false);
-		refresh();
 		return ;
 	}
 

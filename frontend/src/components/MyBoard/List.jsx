@@ -22,8 +22,8 @@ function	FormInput({id, name, placeholder, value, onChange}) {
 	);
 }
 
-function	Form({fields, submitTitle}) {
-	const [fieldsValue, mergeFieldsValue] = useState(Object.fromEntries(fields.map(({name, value}) => ([name, value]))));
+function	Form({fields, submitTitle, onSubmit, onClose}) {
+	const [fieldsValue, mergeFieldsValue] = useState(Object.fromEntries(fields.map(({name, initialValue}) => ([name, initialValue]))));
 
 	const	updateFormValue = e => {
 		mergeFieldsValue({[e.target.name]: e.target.value});
@@ -36,11 +36,12 @@ function	Form({fields, submitTitle}) {
 
 		onSubmit(data);
 	};
+
 	return (
 		<form className="flex flex-col gap-y-2" onSubmit={handleSubmit}>
 			{
 				fields?.length > 0 && fields.map(({id, placeholder, name}) => 
-					<label htmlFor={id}>
+					<label key={name} htmlFor={name}>
 						<input
 							className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm"
 							id={id} placeholder={placeholder} name={name} value={fieldsValue[name]} onChange={updateFormValue}
@@ -65,6 +66,10 @@ function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
 		name: initialName,
 		description: initialDescription
 	});
+	const	fields = [
+		{name: "name", id: name, initialValue: initialName, placeholder: "To Do, ..."},
+		{name: "description", id: name, initialValue: initialDescription, placeholder: "thing to do, ..."},
+	];
 
 	const	updateFormValue = e => {
 		mergeDetails({[e.target.name]: e.target.value});
@@ -77,6 +82,8 @@ function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
 
 		onSubmit(data);
 	};
+
+	return (<Form fields={fields} submitTitle="Save" onSubmit={onSubmit} onClose={onClose}/>);
 
 	return (
 		<form className="flex flex-col gap-y-2" onSubmit={handleUpdateField}>
@@ -151,7 +158,7 @@ function	BoardList({id, name, description, tasksId}) {
 
 
 	return (
-		<div className="w-[70%] shrink-0 grow-0">
+		<div className="w-[70%] max-w-[23rem] shrink-0 grow-0">
 			<ListHeader id={id} name={name} description={description} tasksAmount={tasks.length} refresh={refreshBoard}/>
 			<Tasks tasks={tasksId} listId={id}/> {/*The tasks variables will be used when merging and get the right format from backend*/}
 		</div>

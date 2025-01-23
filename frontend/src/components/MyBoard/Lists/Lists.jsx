@@ -15,7 +15,7 @@ function	BoardLists({lists = []}) {
 	}, [board, refreshBoard]);
 
 	return (
-		<div className="flex items-start gap-x-8 ml-3">
+		<div className="flex-1 flex items-start gap-x-8 ml-3">
 			{
 				lists.length > 0 && lists.map(list =>
 					<List key={`list${list._id}`} id={list._id} name={list.name} description={list.description} tasksId={list.tasks}/>

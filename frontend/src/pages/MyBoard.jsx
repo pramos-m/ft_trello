@@ -8,6 +8,17 @@ import AddColumn from 'components/board/AddColumn';
 
 import Header from "components/MyBoard/Header.jsx";
 import Lists from "components/MyBoard/Lists/Lists.jsx";
+import Backward from "components/MyBoard/Backward.jsx";
+import Trash from "components/MyBoard/Trash.jsx";
+
+function	Footer() {
+	return (
+		<div className="flex justify-between items-end px-2 pb-2">
+			<Backward to="/"/>
+			<Trash />
+		</div>
+	);
+}
 
 function	Board() {
 	const	{ board, error } = useBoard();
@@ -21,11 +32,12 @@ function	Board() {
 
 	return (
 		<div
-			className="w-screen h-screen"
+			className="w-screen h-screen flex flex-col justify-between"
 			style={{backgroundColor: board.color}}
 		>
 			<Header title={board.name}/>
 			<Lists lists={board.lists}/>
+			<Footer/>
 		</div>
 	);
 }

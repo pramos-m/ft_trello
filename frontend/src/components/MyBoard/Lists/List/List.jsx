@@ -48,10 +48,10 @@ function	ListHeader({id, name, description, tasksAmount, refresh}) {
 				editMode ?
 					<ListEdit initialName={name} initialDescription={description} onSubmit={updateListFields} onClose={toogleEditMode}/>
 				:
-					<div className="grid grid-rows-2 grid-cols-2 font-semibold text-xl" onClick={() => !editMode && toogleEditMode()}>
-						<h1 className="">{name}</h1>
+					<div className="grid grid-rows-2 grid-cols-6 break-words font-semibold text-xl" onClick={() => !editMode && toogleEditMode()}>
+						<h1 className="col-span-5">{name}</h1>
 						<h1 className="place-self-end">{tasksAmount}</h1>
-						<h1 className="col-span-2">{description}</h1>
+						<h1 className="col-span-full">{description}</h1>
 					</div>
 			}
 		</>

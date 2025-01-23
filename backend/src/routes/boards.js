@@ -35,6 +35,18 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Ruta para editar un board
+router.patch("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = req.body;
+    const success = await controller.updateBoard(id, data);
+    res.status(200).json({ success });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Ruta para marcar un board como favorito
 router.patch("/:id/favorite", async (req, res) => {
   try {

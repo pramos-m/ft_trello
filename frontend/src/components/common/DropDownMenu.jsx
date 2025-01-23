@@ -29,8 +29,8 @@ export default function DropdownMenu({ items }) {
           {items.map((item, index) => (
             <button
               key={index}
-              onClick={() => {
-                item.onClick();
+              onClick={(e) => {
+                item.onClick(e);
                 // setShowMenu(false);
               }}
               className="w-full px-4 py-2 text-sm text-left hover:bg-neutral-50 flex items-center gap-2"

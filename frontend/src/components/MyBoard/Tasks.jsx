@@ -15,7 +15,7 @@ function	BoardTasks({tasks, listId}) {
 	}, [refreshBoard]);
 
 	return (
-		<div className="flex flex-col gap-y-6 mt-3">
+		<div className="flex flex-col gap-y-6">
 			{
 				tasks && tasks.map(task => 
 					<Task key={`task${task._id}`} name={task.name}/>

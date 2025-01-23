@@ -1,49 +1,66 @@
-import { useState, useRef } from "react";
-
+import { useState } from "react";
+import { motion } from 'framer-motion';
+import { Plus, X } from 'lucide-react';
 import useClickOutside from "hooks/useClickOutside.js";
 
-function	BoardAddList({onCreate}) {
-	const	[enable, setEnable] = useState(false);
-	const	toogleEnable = () => setEnable(enable => !enable);
-	const	ref = useClickOutside(toogleEnable);
-	const	inputRef = useRef();
+function BoardAddList({ onCreate }) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [title, setTitle] = useState('');
+  const ref = useClickOutside(() => {
+    setIsAdding(false);
+    setTitle('');
+  });
 
-	const	handleCreateList = e => {
-		e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    onCreate({ name: title.trim() });
+    setTitle('');
+    setIsAdding(false);
+  };
 
-		const data = Object.fromEntries(new FormData(e.target));
-
-		console.log(data);
-		setEnable(enable => !enable);
-		onCreate(data);
-		return ;
-	}
-
-	return (
-		<div className="w-[70%] shrink-0 grow-0">
-			{
-				enable ?
-					<form ref={ref} onSubmit={handleCreateList} className="flex flex-col gap-y-2">
-						<label htmlFor="name">
-							<input onMouseMove={e => e.stopPropagation()} autoFocus className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm" ref={inputRef} id="name" placeholder="To Do, ..." name="name"/>
-						</label>
-						<div className="flex justify-between">
-							<button type="submit" className="w-2/5 text-sm rounded bg-neutral-200 p-1">
-								Create list
-							</button>
-							<button type="button" onClick={toogleEnable}>
-								<img src="/icons/close.svg" className="w-3"/>
-							</button>
-						</div>
-					</form>
-				:
-					<button className="flex gap-x-2" onClick={toogleEnable}>
-						<img src="/icons/plus.svg" className="w-4"/>
-						<h1 className="font-semibold text-xl">Add a list</h1>
-					</button>
-			}
-		</div>
-	);
+  return (
+    <motion.div layout className="w-full shrink-0 grow-0 flex justify-center">
+      {isAdding ? (
+        <form ref={ref} onSubmit={handleSubmit} className="p-2 w-full max-w-md">
+          <div className="rounded-lg bg-white/50 p-3 backdrop-blur-sm transition-all">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full rounded-md border border-gray-200 bg-white/80 px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Enter list title..."
+              autoFocus
+              name="name"
+            />
+            <div className="mt-3 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsAdding(false)}
+                className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100/80"
+              >
+                <X size={16} />
+              </button>
+              <button
+                type="submit"
+                className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+              >
+                Create List
+              </button>
+            </div>
+          </div>
+        </form>
+      ) : (
+        <button
+          onClick={() => setIsAdding(true)}
+          className="group flex items-center justify-center gap-2 px-4 py-3 w-full max-w-md"
+        >
+          <Plus size={16} className="transition-transform group-hover:scale-110" />
+          Add a list
+        </button>
+      )}
+    </motion.div>
+  );
 }
 
 export default BoardAddList;

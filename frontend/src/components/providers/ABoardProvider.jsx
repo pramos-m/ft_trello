@@ -30,6 +30,10 @@ function	BoardProvider({children})
 	const	navigate = useNavigate();
 	const [board, setBoard] = useMergeState({})
 	const	[error, setError] = useState(null);
+	const [filters, updateFilters] = useMergeState({
+		effort: 'None',
+		priority: 'None'
+	  });
 
 	const	refreshBoard = useCallback(() => {
 		getBoard({id})
@@ -64,6 +68,21 @@ function	BoardProvider({children})
 			.then(() => localUpdater(id, value));
 	}
 
+	const getFilteredCards = (cards) => {
+		return cards.filter(card => {
+		  const effortMatch = filters.effort === 'None' || card.effort === filters.effort;
+		  const priorityMatch = filters.priority === 'None' || card.priority === filters.priority;
+		  return effortMatch && priorityMatch;
+		});
+	  };
+	
+	  const getTotalFilteredCards = () => {
+		return (board.lists).reduce((total, list) => {
+		  const filteredListCards = getFilteredCards(board.tasks.filter(({id}) => list.tasks.includes(id)));
+		  return total + filteredListCards.length;
+		}, 0);
+	  };
+
 	return (
     <BoardContext.Provider
       value={{
@@ -72,6 +91,10 @@ function	BoardProvider({children})
 				updateLocalBoardField,
 				refreshBoard,
 				removeBoard,
+				getTotalFilteredCards,
+				getFilteredCards,
+				updateFilters,
+				filters,
 			}}
 		>
 			{children}

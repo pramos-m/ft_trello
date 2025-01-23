@@ -75,6 +75,19 @@ const controller = {
     return result.modifiedCount > 0;
   },
 
+  async updateTask(id, updateData) {
+
+    console.log(updateData);
+
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateData }
+    );
+    if (result.matchedCount === 0) throw new Error("Task not found");
+    return result.modifiedCount > 0;
+  },
+
+
   // Cambiar el esfuerzo de una tarea
   async changeEffort(id, newEffort) {
     const result = await collection.updateOne(

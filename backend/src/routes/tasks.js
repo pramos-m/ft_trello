@@ -48,6 +48,23 @@ router.patch("/:id/name", async (req, res) => {
   }
 });
 
+router.patch("/:id", async (req, res) => {
+  try {
+    let {name, description = "", effort = "low", priority = "low"} = req.body;
+    if (!effort)
+        effort = "low";
+    if (!priority)
+        priority = "low";
+    if (!description)
+        description = "";
+    const success = await controller.updateTask(req.params.id, {name, description, effort, priority}); 
+    res.status(200).send({ success });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message);
+  }
+});
+
 // Cambiar la descripción de una tarea
 router.patch("/:id/description", async (req, res) => {
   const { newDescription } = req.body;

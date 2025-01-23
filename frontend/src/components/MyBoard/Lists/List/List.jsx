@@ -8,6 +8,10 @@ import Form from "components/Form.jsx";
 
 function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
 	const	ref = useClickOutside(onClose);
+	const	formProps = {
+		ref,
+		onMouseMove: e => e.stopPropagation()
+	};
 	const	fields = [
 		{
 			name: "name",
@@ -23,15 +27,13 @@ function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
 		},
 	];
 
-	return (<Form fields={fields} submitTitle="Save" onSubmit={onSubmit} onClose={onClose} formProps={{ref}}/>);
+	return (<Form fields={fields} submitTitle="Save" onSubmit={onSubmit} onClose={onClose} formProps={formProps}/>);
 }
 
 function	ListHeader({id, name, description, tasksAmount, refresh}) {
 	const	[editMode, setEditMode] = useState(false);
 
-	const	toogleEditMode = () => {
-		setEditMode(edit => !edit);
-	};
+	const	toogleEditMode = () => setEditMode(edit => !edit);
 
 	const	updateListFields = useCallback(data => {
 		console.log({id, data});

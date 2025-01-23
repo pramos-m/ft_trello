@@ -1,7 +1,11 @@
 import { useState } from "react";
 
+import useClickOutside from "hooks/useClickOutside.js";
+
 function	BoardAddTask({onCreate}) {
 	const	[enable, setEnable] = useState(false);
+	const	toogleEnable = () => setEnable(enable => !enable);
+	const	ref = useClickOutside(toogleEnable);
 
 	const	handleCreateTask = e => {
 		e.preventDefault();
@@ -18,9 +22,9 @@ function	BoardAddTask({onCreate}) {
 		<div className="flex flex-col gap-y-3 rounded-[0.625rem] bg-white shadow-md px-2 py-2.5">
 			{
 				enable ?
-					<form onSubmit={handleCreateTask} className="flex flex-col gap-y-2">
+					<form ref={ref} onSubmit={handleCreateTask} className="flex flex-col gap-y-2">
 						<label htmlFor="name">
-							<input autoFocus className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm" id="name" placeholder="Homeworks, ..." name="name"/>
+							<input onMouseMove={e => e.stopPropagation()} autoFocus className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm" id="name" placeholder="Homeworks, ..." name="name"/>
 						</label>
 						<div className="flex justify-between">
 							<button type="submit" className="w-2/5 text-sm rounded bg-neutral-200 p-1">

@@ -1,7 +1,5 @@
 import { useCallback } from "react";
 
-import useBoard from "hooks/useBoard.js";
-
 function	BoardTask({id, name}) {
 	const description = "Es un hecho establecido hace demasiado tiempo que un lector se distraerá con el contenido del texto de un sitio mientras que mira su diseño. El punto de usar Lorem Ipsum es ";
 

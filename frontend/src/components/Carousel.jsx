@@ -11,7 +11,7 @@ const	flows = {
 	},
 };
 
-export function	Carousel({twClassName, cards, CardComponent, direction})
+export function	Carousel({children, twClassName, direction})
 {
 	const carouselRef = useRef(null);
 	const [dragStart, setDragStart] = useState(null);
@@ -72,11 +72,7 @@ export function	Carousel({twClassName, cards, CardComponent, direction})
 			style={styles}
 			{...events}
 		>
-			{
-				cards && cards.map((card, i) =>
-					<CardComponent key={card.carouselId} {...card}/>
-				)
-			}
+			{children}
 		</div>
   );
 }

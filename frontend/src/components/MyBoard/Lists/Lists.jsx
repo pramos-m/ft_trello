@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 
-import useBoard from "../../hooks/useBoard.js";
-import { createList } from "../../services/lists.js";
-import List from "./List.jsx";
-import AddList from "./AddList.jsx";
+import useBoard from "hooks/useBoard.js";
+import { createList } from "services/lists.js";
+import List from "./List/List.jsx";
+import AddList from "./List/AddList.jsx";
 
 function	BoardLists({lists = []}) {
 	const	{ board, refreshBoard } = useBoard();

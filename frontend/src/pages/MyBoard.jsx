@@ -7,7 +7,7 @@ import Column from '../components/board/Column';
 import AddColumn from '../components/board/AddColumn';
 
 import Header from "../components/MyBoard/Header.jsx";
-import Lists from "../components/MyBoard/Lists.jsx";
+import Lists from "../components/MyBoard/Lists/Lists.jsx";
 
 function	Board() {
 	const	{ board, error } = useBoard();

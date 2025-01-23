@@ -31,19 +31,19 @@ function	BoardProvider({children})
 	const [board, setBoard] = useMergeState({})
 	const	[error, setError] = useState(null);
 
-	const	refreshBoard = () => {
+	const	refreshBoard = useCallback(() => {
 		getBoard({id})
 			.then(data => setBoard(data))
 			.catch(err => setError(err));
-	};
+	}, [id]);
 
-	const	removeBoard = () => {
+	const	removeBoard = useCallback(() => {
 		deleteBoard({id})
 			.then(() => navigate("/"))
 			.catch(err => setError(err));
-	};
+	}, [id]);
 
-	useEffect(refreshBoard, [id]);
+	useEffect(refreshBoard, []);
 
 	const	updateLocalBoardField = (name, value, updater = null) => {
 		if (!updater)

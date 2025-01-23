@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Trash2, Star } from 'lucide-react';
-import DropdownMenu from '../common/DropDownMenu';
+
+import DropdownMenu from 'components/common/DropDownMenu.js';
 
 function	BoardDropdown() {
 	const [isFavorite, setIsFavorite] = useState(false);

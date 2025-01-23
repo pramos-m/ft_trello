@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 
 import useBoard from "hooks/useBoard.js";
+import useClickOutside from "hooks/useClickOutside.js";
 import { updateList } from "services/lists.js";
 import Tasks from "components/MyBoard/Tasks.jsx";
 import Form from "components/Form.jsx";
 
 function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
+	const	ref = useClickOutside(onClose);
 	const	fields = [
 		{
 			name: "name",
@@ -21,7 +23,7 @@ function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
 		},
 	];
 
-	return (<Form fields={fields} submitTitle="Save" onSubmit={onSubmit} onClose={onClose}/>);
+	return (<Form fields={fields} submitTitle="Save" onSubmit={onSubmit} onClose={onClose} formProps={{ref}}/>);
 }
 
 function	ListHeader({id, name, description, tasksAmount, refresh}) {
@@ -41,18 +43,18 @@ function	ListHeader({id, name, description, tasksAmount, refresh}) {
 	};
 
 	return (
-		<div className="flex justify-between" onClick={() => !editMode && toogleEditMode()}>
+		<>
 			{
 				editMode ?
 					<ListEdit initialName={name} initialDescription={description} onSubmit={updateListFields} onClose={toogleEditMode}/>
 				:
-					<>
-						<h1 className="font-semibold text-xl">{name}</h1>
-						<h1 className="font-semibold text-xl">{description}</h1>
-						<h1 className="font-semibold text-xl">{tasksAmount}</h1>
-					</>
+					<div className="grid grid-rows-2 grid-cols-2 font-semibold text-xl" onClick={() => !editMode && toogleEditMode()}>
+						<h1 className="">{name}</h1>
+						<h1 className="place-self-end">{tasksAmount}</h1>
+						<h1 className="col-span-2">{description}</h1>
+					</div>
 			}
-		</div>
+		</>
 	);
 }
 

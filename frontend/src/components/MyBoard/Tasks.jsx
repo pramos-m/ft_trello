@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
-import useBoard from "../../hooks/useBoard.js";
-import { createTask } from "../../services/tasks.js";
+import useBoard from "hooks/useBoard.js";
+import { createTask } from "services/tasks.js";
 import Task from "./Task.jsx";
 import AddTask from "./AddTask.jsx";
 

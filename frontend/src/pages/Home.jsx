@@ -1,8 +1,8 @@
-import useBoards from "../hooks/useBoards.js";
-import { Logout } from "../components/Logout.jsx";
-import { BoardsListLayout } from "../components/BoardsListLayout.jsx";
+import useBoards from "hooks/useBoards.js";
+import { Logout } from "components/Logout.jsx";
+import { BoardsListLayout } from "components/BoardsListLayout.jsx";
 
-import { categories } from "../data/categories.js";
+import { categories } from "data/categories.js";
 
 function	Home() {
 	let	[boards, refreshBoards, boardsError] = useBoards();

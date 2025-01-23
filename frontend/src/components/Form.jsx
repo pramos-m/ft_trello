@@ -1,4 +1,4 @@
-import useMergeState from "../../hooks/useMergeState.js";
+import useMergeState from "hooks/useMergeState.js";
 
 const	defaultStyles = {
 	form: "flex flex-col gap-y-2",
@@ -9,7 +9,7 @@ const	defaultStyles = {
 	close: "w-3",
 };
 
-function	Form({fields, submitTitle, onSubmit, onClose, styles = {}}) {
+function	Form({fields, submitTitle, onSubmit, onClose, styles = {}, formProps = {}}) {
 	const [fieldsValue, mergeFieldsValue] = useMergeState(Object.fromEntries(fields.map(({name, initialValue}) => ([name, initialValue]))));
 	const	formStyles = Object.assign({...defaultStyles}, styles);
 
@@ -27,7 +27,7 @@ function	Form({fields, submitTitle, onSubmit, onClose, styles = {}}) {
 	};
 
 	return (
-		<form className={formStyles["form"]} onSubmit={handleSubmit}>
+		<form className={formStyles["form"]} onSubmit={handleSubmit} {...formProps}>
 			{
 				fields?.length > 0 && fields.map(({id, placeholder, name}, index) => {
 					console.log(name, fieldsValue[name]);

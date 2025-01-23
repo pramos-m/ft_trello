@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import useBoard from '../hooks/useBoard.js';
-import Column from '../components/board/Column';
-import AddColumn from '../components/board/AddColumn';
+import useBoard from 'hooks/useBoard.js';
+import Column from 'components/board/Column';
+import AddColumn from 'components/board/AddColumn';
 import { Trash2, Star, ChevronLeft } from 'lucide-react';
-import DropdownMenu from '../components/common/DropDownMenu';
-import SidebarMenu from '../components/common/SidebarMenu';
+import DropdownMenu from 'components/common/DropDownMenu';
+import SidebarMenu from 'components/common/SidebarMenu';
 
 export default function Board() {
   const { columns, deleteCard, deleteColumn } = useBoard();

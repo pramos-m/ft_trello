@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import useBoard from '../hooks/useBoard.js';
+import useBoard from 'hooks/useBoard.js';
 
-import Column from '../components/board/Column';
-import AddColumn from '../components/board/AddColumn';
+import Column from 'components/board/Column';
+import AddColumn from 'components/board/AddColumn';
 
-import Header from "../components/MyBoard/Header.jsx";
-import Lists from "../components/MyBoard/Lists/Lists.jsx";
+import Header from "components/MyBoard/Header.jsx";
+import Lists from "components/MyBoard/Lists/Lists.jsx";
 
 function	Board() {
 	const	{ board, error } = useBoard();

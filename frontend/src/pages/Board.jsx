@@ -59,7 +59,7 @@ export default function Board() {
   const toggleSidebar = () => setShowSidebar(prev => !prev);
 
   return (
-    <div className="min-h-screen bg-[#F1F4FF] flex"> {/* Este div mantiene el fondo general */}
+    <div className="min-h-screen bg-logos-white-bluish flex"> {/* Este div mantiene el fondo general */}
       {/* Overlay cuando el sidebar está abierto */}
       <AnimatePresence>
         {showSidebar && (
@@ -90,7 +90,7 @@ export default function Board() {
 
       <div className="flex-1 flex flex-col h-screen"> {/* Añadido flex-col y h-screen */}
       {/* Header */}
-      <header className="bg-[#F1F4FF] px-6 py-4 relative z-0">
+      <header className="bg-logos-white-bluish px-6 py-4 relative z-0">
           <div className="flex justify-between items-center">
             <button
               onClick={toggleSidebar}
@@ -107,7 +107,7 @@ export default function Board() {
         </header>
 
         {/* Contenido principal */}
-        <div className="flex-1 overflow-x-auto overflow-y-hidden bg-[#F1F4FF]">
+        <div className="flex-1 overflow-x-auto overflow-y-hidden bg-logos-white-bluish">
         <div className="p-6 min-w-full h-full">
           <div className="flex items-start gap-4">
             <motion.div className="flex gap-4">

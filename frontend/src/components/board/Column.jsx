@@ -255,7 +255,7 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
       className={`relative w-72 shrink-0 ${isDraggingToTrash ? 'opacity-50' : ''}`}
     >
       <div style={getColumnPreviewStyle()} />
-      <div className="bg-[#F1F4FF] rounded-lg">
+      <div className="bg-logos-white-bluish rounded-lg">
         <div ref={editRef} className="px-4 py-3" onClick={() => setIsEditing(true)}>
           <div className="flex justify-between items-center mb-2">
             {isEditing ? (
@@ -270,7 +270,7 @@ export default function Column({ column, draggingCard, setDraggingCard, index })
             ) : (
               <div className="flex justify-between items-center w-full">
                 <h2 className="text-base font-medium text-neutral-900">{title}</h2>
-                <span className="bg-[#F1F4FF] rounded-lg">
+                <span className="bg-logos-white-bluish rounded-lg">
                   {column.cards.length}
                 </span>
               </div>

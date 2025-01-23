@@ -2,16 +2,16 @@
 
 // Layout constants
 export const LAYOUT = {
-    container: "min-h-screen bg-[#F1F4FF] flex",
+    container: "min-h-screen bg-logos-white-bluish flex",
     mainContent: "flex-1 flex flex-col h-screen",
-    contentArea: "flex-1 overflow-x-auto overflow-y-hidden bg-[#F1F4FF]",
+    contentArea: "flex-1 overflow-x-auto overflow-y-hidden bg-logos-white-bluish",
     innerPadding: "p-6 min-w-full h-full",
     flexRow: "flex items-start gap-4",
   };
   
   // Header styles
   export const HEADER = {
-    container: "bg-[#F1F4FF] px-6 py-4 relative z-0",
+    container: "bg-logos-white-bluish px-6 py-4 relative z-0",
     titleButton: "flex items-center gap-2 text-xl font-medium text-neutral-grey-800 hover:bg-gray-50 rounded px-2 py-1",
     chevron: "transition-transform",
   };

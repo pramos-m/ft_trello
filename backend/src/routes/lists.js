@@ -62,12 +62,14 @@ router.delete("/:id", async (req, res) => {
 
 // Crear una nueva lista
 router.post("/", async (req, res) => {
-  const { name, boardId, description, index } = req.body;
+  const { name, boardId } = req.body;
+	console.log(req.body);
   if (!name || !boardId) return res.status(400).send("Name and boardId are required");
   try {
-    const listId = await controller.createList({ name, boardId, description, index });
+    const listId = await controller.createList(req.body);
     res.status(201).send({ listId });
   } catch (err) {
+		console.log(err);
     res.status(500).send(err.message);
   }
 });

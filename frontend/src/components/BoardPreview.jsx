@@ -10,10 +10,10 @@ export function	BoardPreview({id, width, name, lists, tasks, color}) {
 					<h1 className="font-dangerless text-[2rem]">{name}</h1>
 				</div>
 				<div className="border-r-2 border-white flex justify-center items-center">
-					<h2 className="font-pompiere text-base">{lists} lists</h2>
+					<h2 className="font-pompiere text-base">{lists.length} lists</h2>
 				</div>
 				<div className="flex justify-center items-center">
-					<h2 className="font-pompiere text-base">{tasks} tasks</h2>
+					<h2 className="font-pompiere text-base">{tasks.length} tasks</h2>
 				</div>
 			</div>
 		</Link>

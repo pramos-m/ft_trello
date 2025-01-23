@@ -1,9 +1,19 @@
 import { useState } from "react";
 import { Trash2 } from 'lucide-react';
 
+import useBoard from "hooks/useBoard.js";
+import { deleteTask } from "services/tasks.js";
+import { deleteList } from "services/lists.js";
+
 function	BoardTrash() {
 	const [isDraggingOverTrash, setIsDraggingOverTrash] = useState(false);
+	const	{ refreshBoard: refresh } = useBoard();
 	const	iconSize = 24;
+
+	const	deleteResource = {
+		task: (id) => deleteTask({id}).then(refresh),
+		list: (id) => deleteList({id}).then(refresh),
+	};
 
 	const handleTrashDragOver = (e) => {
 		e.preventDefault();
@@ -18,6 +28,12 @@ function	BoardTrash() {
 
 	const handleTrashDrop = (e) => {
 		e.preventDefault();
+
+		const	resourceId = e.dataTransfer.getData("id");
+		const	type = e.dataTransfer.getData("type");
+	
+		deleteResource[type](resourceId);
+
 		// const columnId = e.dataTransfer.getData('columnId');
 		// if (columnId && columns[columnId]) {
 		//	 deleteColumn(columnId);
@@ -29,6 +45,7 @@ function	BoardTrash() {
 		//		 deleteCard(columnId, draggingCard.id);
 		//	 }
 		// }
+
 		setIsDraggingOverTrash(false);
 		// setDraggingCard(null);
 		return ;
@@ -38,7 +55,7 @@ function	BoardTrash() {
 		<button
 			className={`w-12 h-12 rounded-lg border-2 ${
 				isDraggingOverTrash ?
-					"border-neutral-grey-300 bg-white"
+					"border-red-500 bg-red-100"
 				:
 					"border-neutral-grey-300 bg-white"
 			} shadow-md flex justify-center items-center`}

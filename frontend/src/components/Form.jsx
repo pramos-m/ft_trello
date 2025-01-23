@@ -46,7 +46,7 @@ function	Form({fields, submitTitle, onSubmit, onClose, styles = {}, formProps = 
 					{submitTitle}
 				</button>
 				<button type="button" onClick={onClose}>
-					<img src="/public/icons/close.svg" className={formStyles["close"]}/>
+					<img src="/icons/close.svg" className={formStyles["close"]}/>
 				</button>
 			</div>
 		</form>

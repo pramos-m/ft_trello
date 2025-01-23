@@ -29,6 +29,10 @@ function	ListEdit({initialName, initialDescription, onSubmit, onClose}) {
 function	ListHeader({id, name, description, tasksAmount, refresh}) {
 	const	[editMode, setEditMode] = useState(false);
 
+	const	toogleEditMode = () => {
+		setEditMode(edit => !edit);
+	};
+
 	const	updateListFields = useCallback(data => {
 		console.log({id, data});
 		updateList({id, data})
@@ -38,9 +42,20 @@ function	ListHeader({id, name, description, tasksAmount, refresh}) {
 			});
 	}, [id, refresh]);
 
-	const	toogleEditMode = () => {
-		setEditMode(edit => !edit);
-	};
+	const	handleDragStart = useCallback(e => {
+		e.stopPropagation();
+	
+		e.dataTransfer.setData("id", id);
+		e.dataTransfer.setData("type", "list");
+		return ;
+	}, []);
+
+	const	handleDragEnd = useCallback(e => {
+		e.stopPropagation();
+		e.preventDefault();
+
+		return ;
+	}, [id]);
 
 	return (
 		<>
@@ -48,7 +63,13 @@ function	ListHeader({id, name, description, tasksAmount, refresh}) {
 				editMode ?
 					<ListEdit initialName={name} initialDescription={description} onSubmit={updateListFields} onClose={toogleEditMode}/>
 				:
-					<div className="grid grid-rows-2 grid-cols-6 break-words font-semibold text-xl" onClick={() => !editMode && toogleEditMode()}>
+					<div
+						className="grid grid-rows-2 grid-cols-6 break-words font-semibold text-xl"
+						onClick={() => !editMode && toogleEditMode()}
+						draggable
+						onDragStart={handleDragStart}
+						onDragEnd={handleDragEnd}
+					>
 						<h1 className="col-span-5">{name}</h1>
 						<h1 className="place-self-end">{tasksAmount}</h1>
 						<h1 className="col-span-full">{description}</h1>
@@ -58,16 +79,16 @@ function	ListHeader({id, name, description, tasksAmount, refresh}) {
 	);
 }
 
-function	BoardList({id, name, description, tasksId}) {
+function	BoardList({id, name, description, tasks: tasksId}) {
 	const	{ board, refreshBoard } = useBoard();
 	const tasks = board.tasks ? board.tasks.filter(({id}) => tasksId.includes(id)) : [];
 
-	console.log(tasksId);
-
 	return (
-		<div className="w-[70%] max-w-[23rem] shrink-0 grow-0">
+		<div
+			className="w-[70%] max-w-[23rem] shrink-0 grow-0"
+		>
 			<ListHeader id={id} name={name} description={description} tasksAmount={tasks.length} refresh={refreshBoard}/>
-			<Tasks tasks={tasksId} listId={id}/> {/*The tasks variables will be used when merging and get the right format from backend*/}
+			<Tasks tasks={tasks} listId={id}/>
 		</div>
 	);
 }

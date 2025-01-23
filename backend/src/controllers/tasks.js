@@ -14,7 +14,6 @@ const controller = {
     const newIndex = maxIndexTask.length > 0 ? maxIndexTask[0].index + 1 : 0;
 
     const newTask = {
-      _id: new ObjectId(), // Generar un nuevo ObjectId para el campo _id
       listId: new ObjectId(listId),
       name,
       description,
@@ -22,12 +21,12 @@ const controller = {
       effort,
       index: newIndex,
     };
-		console.log("\n\n\n");
-		console.log(newTask);
-		console.log("\n\n\n");
+		// console.log("\n\n\n");
+		// console.log(newTask);
+		// console.log("\n\n\n");
     const result = await collection.insertOne(newTask);
 
-    return { ...newTask, _id: result.insertedId };
+    return { ...newTask, id: result.insertedId };
   },
   
   // Eliminar una tarea y ajustar índices

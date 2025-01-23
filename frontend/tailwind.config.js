@@ -38,6 +38,7 @@ export default {
 						DEFAULT: "#1A50D2",
 					},
 					grey: {
+						background: "F5F5F5",
 						DEFAULT: "#757575",
 						selected: "#D9D9D9",
 						optionSelected: "#F2F4F7",

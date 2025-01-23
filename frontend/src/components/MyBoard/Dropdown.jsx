@@ -28,7 +28,7 @@ function	BoardDropdown() {
 	const	{ board, refreshBoard: refresh, removeBoard } = useBoard();
 
 	const	handleSetFavorite = () => {
-		updateBoard({id: board._id, data: {favorite: !board.favorite}})
+		updateBoard({id: board.id, data: {favorite: !board.favorite}})
 			.finally(refresh);
 		return ;
 	}

@@ -10,6 +10,7 @@ router.get("/me", async (req, res) => {
     const boards = await controller.getBoardsByUser(req.user._id);
     res.status(200).json(boards);
   } catch (error) {
+		console.log(error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -35,6 +36,17 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Ruta para crear un nuevo board
+router.post("/", async (req, res) => {
+  try {
+    const data = req.body;
+    const newBoard = await controller.createBoard({...data, userId: req.user._id});
+    res.status(201).json(newBoard);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Ruta para editar un board
 router.patch("/:id", async (req, res) => {
   try {
@@ -42,39 +54,6 @@ router.patch("/:id", async (req, res) => {
     const data = req.body;
     const success = await controller.updateBoard(id, data);
     res.status(200).json({ success });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Ruta para marcar un board como favorito
-router.patch("/:id/favorite", async (req, res) => {
-  try {
-    const id = req.params.id;
-    await controller.addFavorite(id);
-    res.status(200).json({ message: "Board marked as favorite" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Ruta para quitar un board como favorito
-router.patch("/:id/unfavorite", async (req, res) => {
-  try {
-    const id = req.params.id;
-    await controller.removeFavorite(id);
-    res.status(200).json({ message: "Board unmarked as favorite" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Ruta para crear un nuevo board
-router.post("/", async (req, res) => {
-  try {
-    const data = req.body;
-    const newBoard = await controller.createBoard({...data, userId: req.user._id});
-    res.status(201).json(newBoard);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

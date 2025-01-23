@@ -20,7 +20,7 @@ function	BoardAddTask({onCreate}) {
 				enable ?
 					<form onSubmit={handleCreateTask} className="flex flex-col gap-y-2">
 						<label htmlFor="name">
-							<input className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm" id="name" placeholder="Homeworks, ..." name="name"/>
+							<input autoFocus className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm" id="name" placeholder="Homeworks, ..." name="name"/>
 						</label>
 						<div className="flex justify-between">
 							<button type="submit" className="w-2/5 text-sm rounded bg-neutral-200 p-1">

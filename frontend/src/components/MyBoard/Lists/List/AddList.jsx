@@ -9,9 +9,9 @@ function	BoardAddList({onCreate}) {
 
 		const data = Object.fromEntries(new FormData(e.target));
 
-		onCreate(data);
 		console.log(data);
 		setEnable(enable => !enable);
+		onCreate(data);
 		return ;
 	}
 
@@ -21,14 +21,14 @@ function	BoardAddList({onCreate}) {
 				enable ?
 					<form onSubmit={handleCreateList} className="flex flex-col gap-y-2">
 						<label htmlFor="name">
-							<input className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm" ref={inputRef} id="name" placeholder="To Do, ..." name="name"/>
+							<input autoFocus className="w-full h-full p-1 bg-btn-grey-selected rounded-[0.313rem] shadow-inner text-sm" ref={inputRef} id="name" placeholder="To Do, ..." name="name"/>
 						</label>
 						<div className="flex justify-between">
 							<button type="submit" className="w-2/5 text-sm rounded bg-neutral-200 p-1">
 								Create list
 							</button>
 							<button type="button" onClick={() => setEnable(enable => !enable)}>
-								<img src="/public/icons/close.svg" className="w-3"/>
+								<img src="/icons/close.svg" className="w-3"/>
 							</button>
 						</div>
 					</form>

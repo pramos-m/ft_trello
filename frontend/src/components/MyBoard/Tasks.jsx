@@ -18,7 +18,7 @@ function	BoardTasks({tasks, listId}) {
 		<div className="flex flex-col gap-y-6">
 			{
 				tasks && tasks.map(task => 
-					<Task key={`task${task._id}`} name={task.name}/>
+					<Task key={`task${task.id}`} id={task.id} name={task.name}/>
 				)
 			}
 			<AddTask onCreate={createNewTask}/>

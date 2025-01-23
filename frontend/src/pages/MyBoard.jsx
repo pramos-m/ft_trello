@@ -23,6 +23,8 @@ function	Footer() {
 function	Board() {
 	const	{ board, error } = useBoard();
 
+	console.log(board);
+
 	if (error)
 		return (
 			<h1 className="text-xl text-red-500 font-semibold">

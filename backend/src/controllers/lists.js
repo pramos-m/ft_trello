@@ -76,7 +76,7 @@ const controller = {
 
   // Crear una nueva lista
   async createList(data) {
-    const { boardId, name, description, index } = data;
+    const { boardId, name, description = "", index } = data;
 
     // Ajustar índices si se proporciona uno
     if (index !== undefined) {

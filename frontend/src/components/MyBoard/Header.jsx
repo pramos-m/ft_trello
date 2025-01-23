@@ -6,7 +6,7 @@ function	BoardHeader({title}) {
 		<header className="px-6 py-4 relative z-0">
 			<div className="flex justify-between items-center">
 				<Sidebar title={title}/>
-				<Dropdown/>
+				<Dropdown />
 			</div>
 		</header>
 	);

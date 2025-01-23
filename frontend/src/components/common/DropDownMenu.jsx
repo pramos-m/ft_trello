@@ -31,7 +31,7 @@ export default function DropdownMenu({ items }) {
               key={index}
               onClick={() => {
                 item.onClick();
-                setShowMenu(false);
+                // setShowMenu(false);
               }}
               className="w-full px-4 py-2 text-sm text-left hover:bg-neutral-50 flex items-center gap-2"
             >

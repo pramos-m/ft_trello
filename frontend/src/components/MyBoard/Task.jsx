@@ -236,14 +236,14 @@ function BoardTask({ card }) {
   const currentPriority = priorityLevels.find(level => level.name === priority) || priorityLevels[0];
   
   return (
-    <motion.div
-      ref={cardRef}
-	  draggable
-	  onDragStart={handleDragStart}
-	  onDragEnd={handleDragEnd}
-      className={`relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200`}
-      onClick={handleCardClick}
-    >
+  <motion.div
+    ref={cardRef}
+    draggable
+    onDragStart={handleDragStart}
+    onDragEnd={handleDragEnd}
+    className={`relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 z-10`} // Add z-10
+    onClick={handleCardClick}
+  >
       <div className="p-4">
         {isEditing ? (
           <div className="space-y-3" onClick={e => e.stopPropagation()}>
@@ -373,21 +373,22 @@ function BoardTask({ card }) {
         )}
       </div>
 
-      <AnimatePresence>
-        {showLabelInput && (
-          <div className="absolute left-full top-0 ml-2">
-            <LabelMenu
-              isOpen={showLabelInput}
-              onClose={() => setShowLabelInput(false)}
-              selectedLabels={selectedLabels}
-              onLabelSelect={handleLabelSelect}
-              availableLabels={availableLabels}
-              onDeleteLabel={handleDeleteLabel}
-              onColorChange={handleColorChange}
-            />
-          </div>
-        )}
-      </AnimatePresence>
+    <AnimatePresence>
+    {showLabelInput && (
+      <div className="absolute left-full top-0 ml-2 z-20"> {/* Add z-20 */}
+        <LabelMenu
+          isOpen={showLabelInput}
+          onClose={() => setShowLabelInput(false)}
+          selectedLabels={selectedLabels}
+          onLabelSelect={handleLabelSelect}
+          availableLabels={availableLabels}
+          onDeleteLabel={handleDeleteLabel}
+          onColorChange={handleColorChange}
+        />
+      </div>
+    )}
+  </AnimatePresence>
+
     </motion.div>
   );
 }

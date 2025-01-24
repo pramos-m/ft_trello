@@ -27,7 +27,7 @@ function	BoardSidebar({title}) {
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							onClick={toggleSidebar}
-							className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10"
+							className="fixed inset-0 bg-black/20 backdrop-blur-sm z-100"
 						/>
 						<motion.div
 							initial={{ x: -320 }}

@@ -137,7 +137,7 @@ function BoardTask({ card }) {
     handleLabelSelect,
     handleDeleteLabel,
     handleColorChange
-  } = useLabelManager(['blog', 'frontend']); // Pass initial labels
+  } = useLabelManager(); // Pass initial labels
 
   const cardRef = useRef(null);
   const menuRef = useRef(null);

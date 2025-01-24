@@ -8,7 +8,7 @@ import { Carousel } from "components/Carousel.jsx";
 
 function	BoardLists({lists = []}) {
 	const	{ board, refreshBoard } = useBoard();
-	const	twClassName = `w-full h-full flex pb-4 items-start gap-x-8 overflow-x-auto hide-scrollbar pt-2`;
+	const twClassName = `w-full h-full flex items-start gap-x-4 overflow-x-auto hide-scrollbar pt-2`;
 
 	const	createNewList = useCallback(data => {
 		console.log({data: {...data, boardId: board.id}});

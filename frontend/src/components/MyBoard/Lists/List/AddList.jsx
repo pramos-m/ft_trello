@@ -20,8 +20,8 @@ function BoardAddList({ onCreate }) {
   };
 
   return (
-    <motion.div layout className="w-full shrink-0 grow-0 flex justify-center">
-      {isAdding ? (
+<motion.div layout className="w-auto shrink-0 grow-0 flex justify-center items-center">
+    {isAdding ? (
         <form ref={ref} onSubmit={handleSubmit} className="p-2 w-full max-w-md">
           <div className="rounded-lg bg-white/50 p-3 backdrop-blur-sm transition-all">
             <input

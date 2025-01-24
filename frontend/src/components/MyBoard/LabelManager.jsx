@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
-export const useLabelManager = (initialSelectedLabels = []) => {
-  const [selectedLabels, setSelectedLabels] = useState(initialSelectedLabels);
+export const useLabelManager = () => {
+  const [selectedLabels, setSelectedLabels] = useState([]);
   const [availableLabels, setAvailableLabels] = useState([
-    { id: 'blog', name: 'Blog', color: 'bg-green-100 text-green-800' },
+    { id: 'database', name: 'Database', color: 'bg-green-100 text-green-800' },
     { id: 'frontend', name: 'Frontend', color: 'bg-pink-100 text-pink-800' },
     { id: 'backend', name: 'Backend', color: 'bg-yellow-100 text-yellow-800' },
   ]);

@@ -236,12 +236,12 @@ function BoardTask({ card }) {
   const currentPriority = priorityLevels.find(level => level.name === priority) || priorityLevels[0];
   
   return (
-  <motion.div
+    <motion.div
     ref={cardRef}
     draggable
     onDragStart={handleDragStart}
     onDragEnd={handleDragEnd}
-    className={`relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 z-10`} // Add z-10
+    className={`bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200`}
     onClick={handleCardClick}
   >
       <div className="p-4">

@@ -32,8 +32,8 @@ export function	NewBoard({refresh}) {
 					<div className="absolute top-0 left-0 w-screen h-screen bg-blurBackground-dark/75 flex justify-center items-center">
 						<div className="w-[19.75rem] h-[9.688rem] bg-white rounded-[0.625rem] p-4 drop-shadow flex flex-col justify-around">
 							<div className="flex justify-between">
-								<h2 className="flex-1 text-sm text-center">Create Board</h2>
-								<button onClick={() => setIsPopup(false)}>
+							<h2 className="flex-1 text-sm text-center font-bold">Create Board</h2>
+							<button onClick={() => setIsPopup(false)}>
 									<img src="/icons/close.svg"/>
 								</button>
 							</div>

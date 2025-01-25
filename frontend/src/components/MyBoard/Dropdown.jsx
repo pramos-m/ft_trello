@@ -6,19 +6,30 @@ import useBoard from "hooks/useBoard.js";
 import { updateBoard } from "services/boards.js";
 import DropdownMenu from 'components/common/DropDownMenu.jsx';
 
-function	ConfirmPopup({query, onConfirm, onDeny}) {
+function ConfirmPopup({ query, onConfirm, onDeny }) {
 	return (
-		<div onClick={e => e.stopPropagation()} className="w-screen h-screen absolute top-[-52px] right-[-25px] flex justify-center items-center bg-blurBackground-dark/75">
-			<div className="bg-white w-[60%] h-[12%] break-words rounded grid grid-cols-2 grid-rows-2">	
-				<h1 className="col-span-2 place-self-center px-2">
+		<div
+			onClick={(e) => e.stopPropagation()}
+			className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50"
+		>
+			<div className="bg-white w-[90%] max-w-md p-6 rounded-lg shadow-xl text-center space-y-4">
+				<h1 className="text-lg font-semibold text-gray-800">
 					{query}
 				</h1>
-				<button onClick={onConfirm} className="">
-					Confirm
-				</button>
-				<button onClick={onDeny} className="">
-					Deny
-				</button>
+				<div className="flex justify-around">
+					<button
+						onClick={onConfirm}
+						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition-all"
+					>
+						Delete
+					</button>
+					<button
+						onClick={onDeny}
+						className="bg-gray-200 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition-all"
+					>
+						Cancel
+					</button>
+				</div>
 			</div>
 		</div>
 	);
